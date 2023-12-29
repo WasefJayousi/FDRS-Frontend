@@ -17,7 +17,7 @@ const FacultyPage = ({ searchTerm }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const history = useHistory();
-  const backendURL = 'https://fdrs.up.railway.app';
+  const backendURL = 'https://fdrs-backend.up.railway.app';
   const { facultyId } = useParams();
   const { authToken, refreshTokenFunc } = useContext(AuthContext);
 

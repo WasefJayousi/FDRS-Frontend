@@ -18,7 +18,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation();
   const isFacultyPage = location.pathname.includes('/faculty/');
-  const backendURL = 'https://fdrs.up.railway.app';
+  const backendURL = 'https://fdrs-backend.up.railway.app';
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(''); // Add state for search term
 
