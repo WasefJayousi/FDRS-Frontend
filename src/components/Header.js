@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext,useCallback } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 import FacultyButtons from './FacultyButtons';
@@ -469,9 +469,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
             </div>
           </div>
 
-          {/* <button onClick={(e) => toggleLoginPasswordVisibility(e)} className="password-toggle">
-  {showLoginPassword ? 'Hide' : 'Show'} */}
-          {/* </button> */}
+       
           <button type="submit" className="authButton" onClick={handleLoginSubmit}>Login</button>
           <button type="button" className="authButton" onClick={handleForgotPassword}>Forgot Password</button>
         </form>
