@@ -13,7 +13,7 @@ const MyProfile = () => {
   const [loading, setLoading] = useState(true);//////////
   const [documents, setDocuments] = useState([]);
   const { authToken, isAdmin } = useContext(AuthContext);
-  const backendURL = 'http://localhost:3002';
+  const backendURL = 'https://fdrs.up.railway.app/';
   const [isEditMode, setIsEditMode] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');

@@ -11,7 +11,7 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
   const [showButton, setShowButton] = useState(true);
   const location = useLocation();
   const isFacultyPage = location.pathname.includes('/faculty/');
-  const backendURL = 'http://localhost:3002';
+  const backendURL = 'https://fdrs.up.railway.app/';
   const authContext = useContext(AuthContext);
   const [feedbackSuccess, setFeedbackSuccess] = useState('');
   const [feedbackError, setFeedbackError] = useState('');
