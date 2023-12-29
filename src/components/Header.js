@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 import FacultyButtons from './FacultyButtons';
@@ -8,10 +8,9 @@ import Modal from './Modal';
 import axios from 'axios';
 import './Header.css';
 import { RouteParamsContext } from './context/RouteParamsContext';
-import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import './Sidebar.css';
 
-const Sidebar = () => {
+const Sidebar = ({ }) => {
   return (
     <div className="sidebar">
       <FacultyButtons />
@@ -27,12 +26,12 @@ const Input = ({ type, id, name, value, onChange, placeholder }) => (
 );
 
 
-const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
-  const backendURL = 'http://localhost:3002';
+const Header = ({ setIsModalOpen,isLoading,onSearch }) => {
+  const backendURL = 'https://fdrs-backend.up.railway.app';
   const axiosInstance = axios.create({ baseURL: backendURL });
   const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const { updateLoginStatus, isLoggedIn, setIsLoggedIn, setIsAdmin, setUser, authToken, setAuthToken, logout } = useContext(AuthContext);
+  const { updateLoginStatus, isLoggedIn, setIsLoggedIn, isAdmin, setIsAdmin, user, setUser, authToken, setAuthToken, refreshToken,logout } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -47,12 +46,13 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
     email: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
+  const [loginError, setLoginError] = useState('');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [passwordResetEmail, setPasswordResetEmail] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [loginErrorMessage, setLoginErrorMessage] = useState('');
   const [signupErrorMessage, setSignupErrorMessage] = useState('');
-  const [setForgotPasswordErrorMessage] = useState('');
+  const [ForgotPasswordErrorMessage, setForgotPasswordErrorMessage] = useState('');
   const history = useHistory();
   const [successMessage, setSuccessMessage] = useState(null);
   const location = useLocation();
@@ -60,13 +60,12 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
   const tokenFromLink = location.state?.token;
   const { routeParams } = useContext(RouteParamsContext);
   const facultyId = routeParams ? routeParams.facultyId : null;
-  const facultyName = location.state?.facultyName || 'Faculty';
-  const [usernameOrEmail, setUsernameOrEmail] = useState('');
+  const facultyName = location.state?.facultyName || 'Faculty'; 
+  const [usernameOrEmail, setUsernameOrEmail] = useState(''); 
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [loading, setLoading] = useState(true);//////////
   const PASSWORD_VISIBILITY_TIMEOUT = 5000;
-  const [searchResults, setSearchResults] = useState([]);
 
   const goToUserProfile = () => {
     history.push('/my-profile');
@@ -78,10 +77,12 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
       setIsSidebarOpen(false);
 
     }
+
+    
     if (tokenFromLink) {
       const fetchData = async () => {
         try {
-          await axios.get(`${backendURL}/api_faculty/${facultyId}`, {
+          const response = await axios.get(`${backendURL}/api_faculty/${facultyId}`, {
             headers: {
               Authorization: `Bearer ${tokenFromLink}`
             }
@@ -91,10 +92,10 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
       };
       fetchData();
     }
-
+    
 
   }, [tokenFromLink, facultyId, history, setIsLoggedIn, backendURL, isFacultyPage, location]);
-
+  
   const clearFormFields = () => {
     setEmail('');
     setPassword('');
@@ -126,40 +127,40 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
     setPasswordResetEmail(email);
     setPassword('');
     setIsLoginModalOpen(false);
-    setIsSignupOpen(false);
+    setIsSignupOpen(false); 
     setIsForgotPasswordOpen(true);
   };
   const toggleLoginPasswordVisibility = (event) => {
-    event.preventDefault();
+    event.preventDefault(); 
     setShowLoginPassword(true);
     setTimeout(() => {
       setShowLoginPassword(false);
     }, PASSWORD_VISIBILITY_TIMEOUT);
   };
-
+  
   const toggleSignupPasswordVisibility = (event) => {
-    event.preventDefault();
+    event.preventDefault(); 
     setShowSignupPassword(true);
-    setTimeout(() => {
+      setTimeout(() => {
       setShowSignupPassword(false);
     }, PASSWORD_VISIBILITY_TIMEOUT);
   };
-
+  
   const handleSignupSubmit = async (e) => {
-    setLoading(true);
+    setLoading(true); 
     e.preventDefault();
-
+  
     if (!signupData.username.trim() || signupData.username.length < 3) {
       setSignupErrorMessage('Username must be at least 3 characters long.');
       return;
     }
-
+  
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     if (!emailRegex.test(signupData.email)) {
       setSignupErrorMessage('Invalid email format.');
       return;
     }
-
+  
     if (signupData.password.length < 6) {
       setSignupErrorMessage('Password must be at least 6 characters long.');
       return;
@@ -168,7 +169,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
       setSignupErrorMessage('Passwords do not match.');
       return;
     }
-
+  
     try {
       const response = await axiosInstance.post(`${backendURL}/api_auth/register`, signupData);
       setSuccessMessage('Registration successful: ' + response.data.message);
@@ -181,16 +182,16 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
         setSignupErrorMessage('Signup failed. Please try again.');
       }
     }
-    finally {
+    finally{
       setLoading(false);
     }
   };
-
+  
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setSuccessMessage('');
     setLoginErrorMessage('');
-    setLoading(true);
+    setLoading(true); 
 
     if (!usernameOrEmail || !password) {
       setLoginErrorMessage('Username/Email and password are required.');
@@ -198,8 +199,8 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
     }
 
     const loginData = {
-      username: usernameOrEmail,
-      email: usernameOrEmail,
+      username: usernameOrEmail, 
+      email: usernameOrEmail,    
       password: password,
     };
 
@@ -215,7 +216,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
         setAuthToken(token);
         setIsLoggedIn(true);
         setIsAdmin(user.isAdmin);
-        setUser(user);
+        setUser(user); 
         setSuccessMessage('Login Successful');
         setIsLoginModalOpen(false);
         setEmail('');
@@ -237,10 +238,10 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
     finally {
       setLoading(false); // End loading
     }
-  };
+};
 
   const handleLogout = async () => {
-    logout();
+ logout();
   };
   const handleForgotPasswordSubmit = async (e) => {
     e.preventDefault();
@@ -266,7 +267,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
       handleAPIError(error);
       setForgotPasswordData({ email: '' });
     }
-    finally {
+    finally{
       setLoading(false);
     }
   };
@@ -294,12 +295,12 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
     setSuccessMessage('');
     setErrorMessage('');
   };
-
+  
   const handleForgotPasswordInputChange = (e) => {
     setForgotPasswordData({ ...forgotPasswordData, email: e.target.value });
   };
   const closeFileUpload = () => {
-    setIsFileUploadOpen(false);
+    setIsFileUploadOpen(false); 
   };
   const handleUploadButtonClick = () => {
     if (!isLoggedIn) {
@@ -307,15 +308,11 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
       setTimeout(() => setShowLoginPrompt(false), 4000);
       return;
     }
-    setIsModalOpen(true);
+    setIsModalOpen(true); 
   };
-  const handleSearchUpdate = (results) => {
-    setSearchResults(results); // This updates the local state
-    if (onSearch) {
-      onSearch(results); // This lifts the state up to App.js
-    }
+  const handleSearchUpdate = (searchResults) => {
+    onSearch(searchResults);
   };
-
   return (
     <header className={`headerContainer ${isLoading ? 'loading' : ''}`}>
       <div className='left'>
@@ -331,23 +328,25 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
         <div className="login-prompt"><b>You need to be logged in to upload files.</b></div>
       )}
 
-      {isFacultyPage && (
-        <div className="search-upload-container">
-          <div className="search-container">
-            {<FeedbackForm authToken={authToken} onSearchResults={handleSearchUpdate} />}
-          </div>
-          <div className="action-buttons">
-            <button onClick={handleUploadButtonClick} className="authButton">
-              Upload
-            </button>
-            <h1>{facultyName}</h1>
-            {isFileUploadOpen && <FileUpload facultyId={facultyId} closeFileUpload={closeFileUpload} />}
-          </div>
-        </div>
-      )}
+{isFacultyPage && (
+  <div className="search-upload-container">
+    <div className="search-container">  
+      {      <FeedbackForm authToken={authToken} onSearchResults={handleSearchUpdate}  />}
+    </div>
+    <div className="action-buttons">
+      <button onClick={handleUploadButtonClick} className="authButton">
+        Upload
+      </button>
+      <h1>{facultyName}</h1>
+
+      {isFileUploadOpen && <FileUpload facultyId={facultyId} closeFileUpload={closeFileUpload} />}
+    </div>
+  </div>
+)}
       <div className="authButtons">
         {isLoggedIn ? (
           <div className='button'>
+        
             <button className="authButtonL" onClick={handleLogout}>🔚
             </button>
             <button onClick={goToUserProfile} className="profile-button">
@@ -358,54 +357,47 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
           <div className='logoReg'>
             <button className="authButtonL" onClick={handleLoginModalOpen}>Login</button>
             <button className="authButtonL" onClick={handleSignupModalOpen}>Sign Up</button>
-          </div>
+        </div>
         )}
       </div>
       {isFileUploadOpen && (
         <FileUpload facultyId={facultyId} />
       )}
 
-      <Modal isOpen={isSignupOpen} onClose={closeSignupModal}>
-        <label htmlFor="username"><h1>SignUp</h1></label>
+<Modal isOpen={isSignupOpen} onClose={closeSignupModal}>
+  <label htmlFor="username"><h1>SignUp</h1></label>
 
-        {successMessage && (
-          <div className="success-message">
-            {successMessage}
-          </div>
-        )}
+  {successMessage && (
+    <div className="success-message">
+      {successMessage}
+    </div>
+  )}
 
-        {signupErrorMessage && (
-          <div className="error-message">
-            {signupErrorMessage}
-          </div>
-        )}
+  {signupErrorMessage && (
+    <div className="error-message">
+      {signupErrorMessage}
+    </div>
+  )}
 
-<form onSubmit={handleSignupSubmit}>
+  <form onSubmit={handleSignupSubmit}>
     <Input type="text" id="username" name="username" value={signupData.username} onChange={handleSignupInputChange} placeholder="Username" />
     <Input type="email" id="email" name="email" value={signupData.email} onChange={handleSignupInputChange} placeholder="Email" />
-
-    <div className="password-input-container">
-        <Input
-            type={showSignupPassword ? "text" : "password"}
-            id="password"
-            name="password"
-            value={signupData.password}
-            onChange={handleSignupInputChange}
-            placeholder="Password"
+    <Input 
+          type={showSignupPassword ? "text" : "password"}
+          id="password"
+          name="password"
+          value={signupData.password}
+          onChange={handleSignupInputChange}
+          placeholder="Password"
         />
-        <div
-            className="icon"
-            onClick={() => setShowSignupPassword(!showSignupPassword)}
-        >
-            {showSignupPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-        </div>
-    </div>
+       <button onClick={(e) => toggleSignupPasswordVisibility(e)} className="password-toggle">
+  {showSignupPassword ? 'Hide' : 'Show'}
+</button>
 
-    <Input type="password" id="confirm-password" name="confirm-password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} placeholder="Confirm Password" />
+      <Input type="password" id="confirm-password" name="confirm-password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} placeholder="Confirm Password" />
     <button type="submit" className="authButton">Submit</button>
-</form>
-
-      </Modal>
+  </form>
+</Modal>
 
       <Modal isOpen={isForgotPasswordOpen} onClose={closeForgotPasswordModal} >
         <label htmlFor="username"><h1>Forget Password</h1></label>
@@ -425,7 +417,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
           <button type="submit" className="authButton">
             Send Reset Password Email
           </button>
-
+          
         </form>
       </Modal>
       <Modal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} >
@@ -449,29 +441,20 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
 
           <div className="form-group">
             <label htmlFor="password">Password:</label>
-            <div className="input-icon-container">
-              <input
-                type={showLoginPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                className="inputBarH"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-              />
-              <div
-                className="icon"
-                onClick={() => setShowLoginPassword(!showLoginPassword)}
-              >
-                {showLoginPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-              </div>
-            </div>
+            <input
+              type={showLoginPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              className="inputBarH"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)} 
+              placeholder="Password"
+              required
+            />
           </div>
-
-          {/* <button onClick={(e) => toggleLoginPasswordVisibility(e)} className="password-toggle">
-  {showLoginPassword ? 'Hide' : 'Show'} */}
-          {/* </button> */}
+          <button onClick={(e) => toggleLoginPasswordVisibility(e)} className="password-toggle">
+  {showLoginPassword ? 'Hide' : 'Show'}
+</button>
           <button type="submit" className="authButton" onClick={handleLoginSubmit}>Login</button>
           <button type="button" className="authButton" onClick={handleForgotPassword}>Forgot Password</button>
         </form>
