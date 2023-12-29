@@ -1,0 +1,217 @@
+
+.faculty-container {
+  display: flex;
+  position: relative;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.ResourcesfacultyName {
+  border: 3px solid rgba(0, 0, 0, 0);
+  background: rgba(0, 0, 0, 0.4);
+  width: 100%;
+  z-index: 10;
+  position: fixed;
+  top: 0; /* Ensures the element sticks to the top of the page */
+  
+}
+
+.ResourcesfacultyName h1 {
+  text-align:center;
+}
+
+
+
+.header-message {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #f0f0f0; 
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.login-prompt {
+  color: rgb(255, 255, 255);
+  background-color: rgb(197, 14, 1);
+  position: fixed;
+  top: 9%;
+  left: 37%;
+  height: 35px;
+  padding: 10px;
+  z-index: 10000;
+}
+.scrollable-container {
+  max-height: 500px; 
+  overflow-y: auto;  
+}
+.uploaded-photo {
+  width: 200px;
+  height: 150px;
+}
+
+.App {
+  text-align: center;
+}
+
+.App .faculty-container p {
+  margin-top: 150px;
+}
+
+.form {
+  display: flex;
+  align-items: center;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    font-size: 1.5rem;
+  }
+}
+
+.primary-color {
+  background-color: #4CAF50; 
+}
+.secondary-color {
+  color: #333;
+}
+
+bodY {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  overflow: auto;
+}
+.center {
+  display: flex;
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+}
+
+
+
+
+.root-faculty h1 {
+  /* Positioning and styling for the title */
+  margin-top: 20px; /* Adjust the value as needed to position under the header */
+  text-align: center;
+  /* Add more styles as needed */
+}
+
+.fade-appear,
+.fade-enter {
+  opacity: 0;
+  z-index: 1;
+}
+.fade-appear-active,
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms linear;
+}
+
+
+.welcome {
+  font-size: 20px;
+  width: 70%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+
+.resources-container {
+  position: relative;
+  z-index: 2; /* Above the fixed background */
+  overflow-y: auto; /* Enables scrolling */
+  max-height: 100vh; /* Adjust if necessary to fit within the viewport */
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust minmax values as needed */
+  grid-gap: 10px; /* Adjust the gap size as needed */
+  width: 100%;
+  height: 100vh; /* This will make the container take the full viewport height */
+  padding: 10px; /* Add some padding */
+  box-sizing: border-box; /* Include padding in the box size */
+  overflow-y: auto; /* Allows scrolling if content is taller than the screen */
+}
+
+.faculty-buttons-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* This will create as many columns as can fit with a minimum width of 200px */
+  grid-gap: 10px;
+  padding: 10px;
+  width: 100%; /* Ensure the container fills the width of its parent */
+  height: 100%; /* Ensure the container fills the height of its parent */
+  align-items: stretch;
+  justify-items: stretch;
+}
+
+.faculty-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  text-decoration: none;
+  color: white; /* Adjust the text color as needed */
+  height: 100%; /* Make each button fill the height of the grid cell */
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden; /* Hide overflow to maintain border radius */
+  position: relative;
+  z-index: 1;
+}
+
+.faculty-button::before {
+  content: '';
+  background: rgba(0, 0, 0, 0.5); /* Adjust black overlay opacity as needed */
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 4px;
+  z-index: -1;
+}
+
+.faculty-button:hover {
+  transform: scale(1.05); /* Slightly enlarge buttons on hover */
+}
+
+/* Ensure the rest of your page content uses the full height */
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
+/* Add styles for your headings or any additional elements */
+h1 {
+  text-align: center;
+  color: #ffffff; /* Heading color */
+}
+
+

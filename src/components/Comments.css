@@ -1,0 +1,84 @@
+/* Comments.css */
+
+.comments-container {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: transparent;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgb(255, 255, 255);
+  overflow-y: auto; /* Ensures that content can scroll */
+}
+
+.comments-list {
+  margin-bottom: 20px;
+}
+
+.comment {
+  padding: 15px;
+  background-color: transparent; /* Dark background for each comment */
+  margin-bottom: 10px;
+  border-left: 3px solid #ffffffb9; /* Highlight line for visual interest */
+  border-radius: 4px; /* Slightly rounded corners for each comment */
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.comment-author {
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.comment-date {
+  font-size: 0.85em;
+  color: #a1a1a1; /* Lighter text for less emphasis */
+}
+
+.comment-body {
+  font-size: 1em;
+  color: #d1d1d1; /* High contrast text color for readability */
+  line-height: 1.5; /* Spacing for readability */
+}
+.comments-title {
+  color: white;
+}
+
+.inputBarC {
+  width: 100%;
+  background-color: transparent; /* Dark background for input */
+  color: white; /* White text color for input */
+  border: 1px solid black; /* Slightly lighter border for visibility */
+  border-radius: 4px;
+  font-size: large;
+  font-weight: bolder;
+}
+
+.add-comment {
+  margin-top: 20px;
+}
+
+.sortButton:hover {
+  background: #a1a1a1f5
+}
+
+.add-comment .authButton:hover{
+  background: #a1a1a1;
+}
+
+.sortButton {
+  margin-bottom: 10px;
+}
+
+
+
+.comments-list{
+    /* Start by resetting potential impacts */
+    position: static;
+    margin: 0;
+    padding: 0;
+    /* Add a border or background color for visibility during debugging */
+}

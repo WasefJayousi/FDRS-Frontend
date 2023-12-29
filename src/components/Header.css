@@ -1,0 +1,378 @@
+/* Header Gradient Animation */
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.faculty-header-name {
+  /* add your styles here */
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 10px;
+  color: white;
+  /* choose the color that fits your design */
+  /* other styles as needed */
+}
+
+.headerContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem;
+  align-items: center;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.3);
+  background-size: 200% 200%;
+  animation: gradientBG 15s ease infinite;
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .headerContainer {
+    align-items: baseline;
+  }
+}
+
+.upload-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  z-index: 1000;
+
+}
+
+@keyframes loadingAnimation {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Apply this only when the 'loading' class is added to the header */
+.headerContainer.loading {
+  background: linear-gradient(to right, rgb(154, 233, 245) 30%, #0278a0 50%);
+  background-size: 200% 100%;
+  animation: loadingAnimation 2s ease-in-out infinite;
+}
+
+/* Responsive Design Improvements */
+@media screen and (max-width: 768px) {
+  .headerContainer {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .authButtons,
+  .search-upload-container {
+    justify-content: space-around;
+    z-index: 11;
+  }
+}
+
+.search-upload-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media screen and (max-width: 600px) {
+  .headerContainer {
+    padding: 0.5rem;
+  }
+}
+
+/* Styles for the left part of the header */
+.headerContainer .left {
+  display: flex;
+}
+
+/* Logo Styles with hover effect */
+.logoContainer .logo {
+  width: 70px;
+  display: flex;
+  margin-right: 10%;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.logoContainer .logo:hover {
+  transform: scale(1.1);
+}
+
+.authButtons .logoReg {
+  margin-right: 50px;
+}
+
+.authButtons {
+  background: transparent;
+}
+
+.authButtonL {
+  z-index: 0;
+}
+
+.sidebarToggle {
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .sidebarToggle {
+    z-index: 13;
+  }
+}
+
+/* Auth Buttons Styles with hover effects */
+.authButton,
+.authButtonL,
+.sidebarToggle {
+  color: #ffffff;
+  border-radius: 5px;
+  cursor: pointer;
+  align-items: center;
+  height: 35px;
+  font-size: medium;
+  display: inline-block;
+  position: relative;
+  transition: all 0.3s ease;
+  background-color: rgba(0, 0, 0, 0);
+  border: 1px solid white;
+  margin-right: 5px;
+}
+
+@media screen and (max-width: 600px) {
+  .authButtonL {
+    z-index: 1;
+  }
+}
+
+.authButton:hover,
+.authButtonL:hover,
+.sidebarToggle:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.507);
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.action-buttons .authButton:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Input Bar Styles with focus effect */
+.inputBarH {
+  border-radius: 5px;
+  background-color: #6a0000;
+  color: #fff;
+  height: 30px;
+  margin-right: 3px;
+  font-weight: 100px;
+  text-align: center;
+  justify-content: center;
+  padding: 10px;
+  font-size: larger;
+  transition: border-color 0.3s;
+}
+
+.inputBarH::placeholder {
+  color: #f5f5f5;
+}
+
+.inputBarH:focus {
+  border-color: #77adba;
+  outline: none;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  position: fixed;
+  margin-top: 70px;
+  left: 0;
+  top: 0;
+  width: 250px;
+  height: 90%;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #2f3640;
+  font-family: 'Arial', sans-serif;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    margin-top: 0;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #2f3640;
+    font-family: 'Arial', sans-serif;
+    padding: 15px;
+    overflow-y: auto;
+    z-index: 12;
+  }
+}
+
+.upload-modal-content {
+  width: 400px;
+  background-color: rgba(255, 255, 255, 0.13);
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+  padding: 50px 35px;
+}
+
+@media (max-width: 768px) {
+  .upload-modal-content {
+    width: 200px;
+    background-color: rgba(255, 255, 255, 0.13);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding: 50px 35px;
+    z-index: 11;
+  }
+}
+
+.upload-modal-content * {
+  font-family: 'Poppins', sans-serif;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  outline: none;
+  border: none;
+  text-align: revert;
+}
+
+.upload-modal-content h1 {
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 42px;
+  text-align: center;
+}
+
+.upload-modal-content label {
+  display: block;
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.upload-modal-content input {
+  display: block;
+  height: 30px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 3px;
+  padding: 0 10px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+::placeholder {
+  color: #e5e5e5;
+}
+
+.upload-modal-content .authButton {
+  margin-top: 15px;
+  width: 100%;
+  background-color: #ffffff;
+  color: #080710;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+
+.success-message {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  margin: 10px 0;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.error-message {
+  padding: 10px;
+  background-color: #f44336;
+  color: white;
+  margin: 10px 0;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.noResults {
+  display: flex;
+  position: absolute;
+  background-color: #6a0000;
+  margin-top: 2px;
+  z-index: 1000;
+}
+
+@media (max-width: 768px) {
+  .noResults {
+    display: flex;
+    position: absolute;
+    background-color: #6a0000;
+    margin-top: 2px;
+    padding: 2px;
+    z-index: 600;
+  }
+}
+
+.action-buttons h1 {
+  font-size: x-large;
+  position: fixed;
+  left: 0%;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .action-buttons h1 {
+    padding-top: 30px;
+  }
+}
