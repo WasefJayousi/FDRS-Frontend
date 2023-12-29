@@ -131,21 +131,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
     setIsSignupOpen(false);
     setIsForgotPasswordOpen(true);
   };
-  const toggleLoginPasswordVisibility = (event) => {
-    event.preventDefault();
-    setShowLoginPassword(true);
-    setTimeout(() => {
-      setShowLoginPassword(false);
-    }, PASSWORD_VISIBILITY_TIMEOUT);
-  };
-
-  const toggleSignupPasswordVisibility = (event) => {
-    event.preventDefault();
-    setShowSignupPassword(true);
-    setTimeout(() => {
-      setShowSignupPassword(false);
-    }, PASSWORD_VISIBILITY_TIMEOUT);
-  };
+  
 
   const handleSignupSubmit = async (e) => {
     setLoading(true);
@@ -474,9 +460,6 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
             </div>
           </div>
 
-          {/* <button onClick={(e) => toggleLoginPasswordVisibility(e)} className="password-toggle">
-  {showLoginPassword ? 'Hide' : 'Show'} */}
-          {/* </button> */}
           <button type="submit" className="authButton" onClick={handleLoginSubmit}>Login</button>
           <button type="button" className="authButton" onClick={handleForgotPassword}>Forgot Password</button>
         </form>
