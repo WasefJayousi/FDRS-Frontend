@@ -31,16 +31,16 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
   };
 
   const handleSearch = async () => {
-    setSearchPerformed(true); 
+    setSearchPerformed(true);
     try {
       const response = await axios.get(`${backendURL}/api_resource/search`, {
         params: { term: searchTerm },
         headers: { Authorization: `Bearer ${authToken}` },
       });
-      setSearchResults(response.data);
-      onSearchResults(response.data); 
+      onSearchResults(response.data); // Pass the filtered results to the FacultyPage
     } catch (error) {
       console.error('Search error:', error);
+      // Optionally handle error state
     }
   };
 
@@ -65,8 +65,7 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
       setSearchTerm('');
       setFeedbackSuccess(response.data.message); // Set success message from response
     } catch (error) {
-      console.error('Feedback submission error:', error);
-      setFeedbackError(error.response?.data?.message || 'An error occurred while submitting feedback.');
+      setFeedbackError('You need to add more than 5 character.');
     }
   };
 
@@ -82,7 +81,6 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
             onChange={handleInputChange}
             style={{
               borderRadius: '10px 0 0 10px',
-              border: '1px solid #ccc',
               flexGrow: 1,
               fontSize: 'medium',
               fontWeight: '600',
@@ -140,13 +138,7 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
           <p>No results found. Would you like to submit your search as feedback?</p>
         </div>
       )}
-      {searchPerformed && searchResults.length > 0 && (
-        <div>
-          {searchResults.map((result) => (
-            <div key={result.id}>{result.title}</div>
-          ))}
-        </div>
-      )}
+      
     </div>
   );
 };
