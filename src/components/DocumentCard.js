@@ -100,10 +100,16 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
     }
   };
   const handleDeleteFeedback = async (e, feedbackId) => {
-    e.stopPropagation(); // Stop click event from bubbling up
-    console.log(`Attempting to delete feedback with ID: ${feedbackId}`); // Debugging log
+    e.stopPropagation(); // Prevent event bubbling
     await deleteFeedback(feedbackId);
   };
+  
+  const handleSendEmail = (e, emailAddress) => {
+    e.stopPropagation(); // Prevent event bubbling
+    sendEmail(emailAddress);
+  };
+  
+  
     const stopPropagation = (e) => e.stopPropagation();
     const CardContent = () => {
       const cardStyle = {
@@ -189,25 +195,27 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
             
           </div>
         );
-      case 'feedback':
-        return (
-          <div className={cardClassName}>
-          <div>
-            <h3><strong>Email:</strong> {document.User.Email}</h3>
-            <h3><strong>Feedback:</strong> {document.SearchText}</h3>
-            <div>
-              <button 
-                className="authButton" 
-                onClick={(e) => handleDeleteFeedback(e, document._id)}>
-                Delete Feedback
-              </button>
-                <button onClick={() => sendEmail(document.User.Email)} className="authButton">
-                  Send Email
-                </button>
+        case 'feedback':
+          return (
+            <div  className="feedbackcard"onClick={(e) => e.stopPropagation()}> 
+              <div>
+                <h3><strong>Email:</strong> {document.User.Email}</h3>
+                <h3><strong>Feedback:</strong> {document.SearchText}</h3>
+                <div>
+                  <button 
+                    className="authButton" 
+                    onClick={(e) => handleDeleteFeedback(e, document._id)}>
+                    Delete Feedback
+                  </button>
+                  <button 
+                    className="authButton" 
+                    onClick={(e) => handleSendEmail(e, document.User.Email)}> 
+                    Send Email
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        );
+          );
       default:
         return null;
     }
