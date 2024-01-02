@@ -32,17 +32,31 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
 
   const handleSearch = async () => {
     setSearchPerformed(true);
+    if (!searchTerm.trim()) {
+      // If the search term is empty, reset the results and don't perform a search.
+      setSearchResults([]);
+      onSearchResults([]); // Inform the parent component that no search results are found.
+      return;
+    }
     try {
       const response = await axios.get(`${backendURL}/api_resource/search`, {
         params: { term: searchTerm },
         headers: { Authorization: `Bearer ${authToken}` },
       });
-      onSearchResults(response.data); // Pass the filtered results to the FacultyPage
+      setSearchResults(response.data); // Set the search results state.
+      onSearchResults(response.data); // Pass the filtered results to the parent component.
+      setSearchTerm(''); // Clear the search term if needed.
+      if (response.data.length === 0) {
+        // If no search results, show the prompt to submit feedback.
+        setShowSearchPrompt(true);
+      }
     } catch (error) {
       console.error('Search error:', error);
-      // Optionally handle error state
+      setSearchResults([]); // Reset the search results on error.
+      onSearchResults([]); // Inform the parent component that an error occurred.
     }
   };
+  
 
   const submitFeedback = async () => {
     const { user } = authContext;

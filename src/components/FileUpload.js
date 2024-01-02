@@ -164,7 +164,7 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
           setImg(null);
         }
       } catch (error) {
-        setError(error.response?.data?.message || 'An error occurred while uploading the document.');
+        setError( 'Title already exists');
       }
       finally {
         setIsLoading(false); // This will execute after try or catch block
@@ -184,9 +184,9 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
   return (
     <>
       {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={closeModal} >
-          {error && <div className="error-message">{error}</div>}
-          {successMessage && <div className="success-message">{successMessage}</div>}
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
+        {error && <div className="error-message">{error}</div>}
+        {successMessage && <div className="success-message">{successMessage}</div>}
 
           <Input placeholder="Title" type="text" id="title" name="title" value={title} onChange={handleFieldChange} />
           {validationErrors.title && <div className="error-message">{validationErrors.title}</div>}
@@ -209,9 +209,10 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
           {isLoading && <div>Loading...</div>}
 
           <div className="modal-footer">
-            <button onClick={handleUpload} className="authButton">{isLoading ? 'Uploading...' : 'Upload'}</button>
+            <button onClick={handleUpload} className="authButton" disabled={isLoading}>
+              {isLoading ? 'Uploading...' : 'Upload'}
+            </button>
             <button onClick={closeModal} className="authButton">Close</button>
-
           </div>
         </Modal>
       )}

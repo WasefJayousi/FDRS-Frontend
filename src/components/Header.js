@@ -188,7 +188,6 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
     try {
       const response = await axiosInstance.post(`${backendURL}/api_auth/register`, signupData);
       setSignupSuccessMessage('Registration successful!');
-      closeSignupModal();
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const backendErrors = error.response.data.errors.map(err => err.msg).join(", ");

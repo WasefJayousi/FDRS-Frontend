@@ -14,8 +14,9 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const history = useHistory();
   const location = useLocation();
-
-  
+  const [actionSuccess, setActionSuccess] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [messageTimeout, setMessageTimeout] = useState(null);
   useEffect(() => {
     if (authToken && document && document._id) {
       const fetchFavorites = async () => {
@@ -33,28 +34,53 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
       fetchFavorites();
     }
   }, [authToken, document]);
+  const setMessageWithTimer = (successMsg, errorMsg) => {
+    setActionSuccess(successMsg);
+    setActionError(errorMsg);
+    clearTimeout(messageTimeout);
+    const newTimeout = setTimeout(() => {
+        setActionSuccess('');
+        setActionError('');
+    }, 3000);
+    setMessageTimeout(newTimeout);
+};
+
+// Cleanup on unmount
+useEffect(() => {
+    return () => {
+        clearTimeout(messageTimeout);
+    };
+}, [messageTimeout]);
+
   if (!document) return null;
   const goToResourceDetail = () => {
     history.push(`/resource/${document._id}`);
   };
+  const resetMessages = () => {
+    setActionSuccess('');
+    setActionError('');
+  };
+
   const toggleFavorite = async () => {
+    resetMessages();
     if (!isLoggedIn) {
       setShowLoginPrompt(true);
       setTimeout(() => setShowLoginPrompt(false), 4000);
       return;
     }
-
     const action = isFavorited ? 'unfavorite' : 'favorite';
     try {
-      const method = isFavorited ? 'delete' : 'post';  // Use delete for unfavorite
-      const response = await axios[method](`${backendURL}/api_favorite/resources/${document._id}/${action}`, {
+      const method = isFavorited ? 'delete' : 'post';
+      await axios[method](`${backendURL}/api_favorite/resources/${document._id}/${action}`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
+      setMessageWithTimer(`Resource has been ${isFavorited ? 'removed from' : 'added to'} favorites.`, '');
       setIsFavorited(!isFavorited);
     } catch (error) {
-      console.error(`Error toggling favorite status: ${error}`);
+      setMessageWithTimer('', 'Failed to update favorite status.');
     }
   };
+
   const authorizeResource = async (resourceId) => {
     try {
       const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`,
@@ -94,15 +120,25 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
 
   
   
-  const handleDelete = () => {
-    if(onDelete) {
-      onDelete(document._id);
+  const handleDelete = async () => {
+    resetMessages();
+    try {
+      await onDelete(document._id);
+      setMessageWithTimer('Resource deleted successfully.', '');
+    } catch (error) {
+      setMessageWithTimer( 'Failed to delete resource.');
     }
   };
   const handleDeleteFeedback = async (e, feedbackId) => {
-    e.stopPropagation(); // Prevent event bubbling
-    await deleteFeedback(feedbackId);
-  };
+    e.stopPropagation();
+    try {
+        await deleteFeedback(feedbackId);
+        setMessageWithTimer('Feedback deleted successfully.', '');
+    } catch (error) {
+        setMessageWithTimer('', 'Failed to delete feedback.');
+    }
+};
+
   
   const handleSendEmail = (e, emailAddress) => {
     e.stopPropagation(); // Prevent event bubbling
@@ -222,10 +258,12 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
   };
 
   return (
-    <div >
+<div>
+    {actionSuccess && <div className="success-message">{actionSuccess}</div>}
+    {actionError && <div className="error-message">{actionError}</div>}
+    {showLoginPrompt && <div className="login-prompt">Please log in to add to favorites.</div>}
+    <CardContent onDelete={handleDelete} />
 
-
-<CardContent onDelete={onDelete} />
 
     </div>
   );
