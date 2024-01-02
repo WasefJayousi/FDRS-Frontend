@@ -126,7 +126,7 @@ useEffect(() => {
       await onDelete(document._id);
       setMessageWithTimer('Resource deleted successfully.', '');
     } catch (error) {
-      setMessageWithTimer( 'Failed to delete resource.');
+      setMessageWithTimer('Failed to delete resource.');
     }
   };
   const handleDeleteFeedback = async (e, feedbackId) => {
