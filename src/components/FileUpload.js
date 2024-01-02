@@ -148,7 +148,13 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
         });
 
         if (response.status === 201) {
+          if(isAdmin){
           setSuccessMessage('Document uploaded successfully');
+          }
+          else{
+          setSuccessMessage('Document uploaded successfully waiting for approval');
+
+          }
           setError('');
           setTitle('');
           setAuthorFirstName('');
