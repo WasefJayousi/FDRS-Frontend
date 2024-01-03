@@ -40,32 +40,37 @@
 .social-links {
   text-align: center;
 }
-
 .social-buttons a {
-  display: inline-flex; /* Use flex to center content within the button */
-  align-items: center; /* Vertical align */
-  justify-content: center; /* Horizontal align */
+  display: flex; /* Changed from inline-flex to flex for better control over alignment */
+  align-items: center; /* Keep items vertically centered */
+  justify-content: center; /* Center the content horizontally */
   margin: 10px;
-  padding: 12px;
+  padding: 8px 12px; /* Adjusted padding for better spacing */
   background-color: #fff; /* White background */
-  border-radius: 50%; /* Circular buttons */
+  border-radius: 20px; /* Changed from 50% to 20px for a pill shape */
   text-decoration: none;
   color: black;
-  width: 48px; /* Width for circle */
-  height: 48px; /* Height for circle */
   box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow for depth */
-  transition: transform 0.3s; /* Smooth transform on hover */
+  transition: transform 0.3s, background-color 0.3s; /* Smooth transform and background color transition on hover */
+  white-space: nowrap; /* Prevent text from wrapping */
 }
 
 .social-buttons a:hover {
   transform: translateY(-3px); /* Slight move up on hover */
-  background-color: #f0f0f0; /* Slight background color change on hover */
+  background-color: #e8e8e8; /* Slight background color change on hover */
 }
 
 .social-buttons img {
-  width: auto; /* Maintain aspect ratio */
-  height: 100%; /* Full height of the parent */
+  display: block; /* Ensures that the image is treated as a block-level element */
+  max-width: 24px; /* Sets the maximum width for the logo */
+  max-height: 24px; /* Sets the maximum height for the logo */
+  width: auto; /* Maintains the aspect ratio */
+  height: auto; /* Maintains the aspect ratio */
+  margin-right: 10px; /* Adds some space between the logo and the text */
+  vertical-align: middle; /* Aligns the logo vertically in the middle */
 }
+
+
 
 /* Keyframes for slide-up and fade-in animation */
 @keyframes slideUpFadeIn {

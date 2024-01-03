@@ -40,8 +40,7 @@ const AboutUs = () => {
         </p>
         <h2>Contact Us</h2>
         <p>
-          For more information about our programs and initiatives, please contact us at [contact details]. We are always eager to engage with prospective students, researchers, and collaborators.
-          fdrs1697@gmail.com
+          For more information about our programs and initiatives, please contact us at fdrs1697@gmail.com. We are always eager to engage with prospective students, researchers, and collaborators.
         </p>
           <h2>Connect with Us</h2>
           <div className="social-buttons">
