@@ -16,7 +16,6 @@ const PasswordReset = () => {
   const history = useHistory();
   const [showPassword, setShowPassword] = useState(false);
   const url = `${backendURL}/api_auth/post_reset-password/${userId}/${token}`;
-  const isProfilePage = location.pathname.includes(`/reset-password`);
   const backgroundImage = `/my-profile.png`;
   useEffect(() => {
     const originalStyle = {
@@ -93,7 +92,7 @@ const PasswordReset = () => {
   };
   
   return (
-    <div className="password-reset-container">
+    <div className="upload-modal-content">
       <h1>Reset Your Password</h1>
       {message && <div className="message">{message}</div>}
       {!isTokenValid ? (
@@ -125,7 +124,7 @@ const PasswordReset = () => {
               required
             />
           </div>
-          <button type="submit" className="submit-button">Reset Password</button>
+          <button type="submit" className="authButton">Reset Password</button>
         </form>
       )}
     </div>
