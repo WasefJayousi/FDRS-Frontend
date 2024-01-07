@@ -74,7 +74,11 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
   const [signupSuccessMessage, setSignupSuccessMessage] = useState('');
   const [forgotPasswordSuccessMessage, setForgotPasswordSuccessMessage] = useState('');
 
-
+  const isValidEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return emailRegex.test(email);
+  };
+  
   const goToUserProfile = () => {
     history.push('/my-profile');
   };
@@ -128,7 +132,14 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
     setIsSignupOpen(false);
     clearFormFields();
   };
-
+  const closeLoginModal = () => {
+    setIsLoginModalOpen(false);
+    setUsernameOrEmail(''); // Clear username or email
+    setPassword(''); // Clear password
+    setLoginErrorMessage(''); // Clear any login error messages
+    setLoginValidationErrors({}); // Clear validation errors
+  };
+  
   const handleForgotPassword = () => {
     setPasswordResetEmail(email);
     setPassword('');
@@ -245,10 +256,13 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
       }
     } catch (error) {
       console.error('Login error:', error);
-      const errorMessage = error.response?.data?.message
-        ? error.response.data.message
-        : 'Login failed. Please try again later.';
-      setLoginErrorMessage(errorMessage);
+      // Set a specific error message for incorrect username/password
+      if (error.response && error.response.status === 401) { // Assuming 401 is the status code for unauthorized access
+        setLoginErrorMessage('Incorrect username or password.');
+      } else {
+        // Generic error message for other types of errors
+        setLoginErrorMessage('Login failed. Please try again later.');
+      }
     }
     finally {
       setLoading(false); // End loading
@@ -259,12 +273,21 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
   };
   const handleForgotPasswordSubmit = async (e) => {
     e.preventDefault();
-    setIsResettingPassword(true);
-    setForgotPasswordErrorMessage('');
-    setSuccessMessage('');
-    setLoading(true);
+  setIsResettingPassword(true);
+  setForgotPasswordErrorMessage('');
+  setSuccessMessage('');
+  setLoading(true);
+
+
     if (!forgotPasswordData.email) {
       setForgotPasswordErrorMessage('Email is required.');
+      setIsResettingPassword(false);
+      return;
+    }
+
+    if (!isValidEmail(forgotPasswordData.email)) {
+      setForgotPasswordErrorMessage('Email is not valid.');
+      setIsResettingPassword(false);
       return;
     }
 
@@ -278,20 +301,22 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
         setIsForgotPasswordOpen(false);
       }
     } catch (error) {
-      handleAPIError(error);
-      setForgotPasswordData({ email: '' });
-    }
-    finally {
-        setIsResettingPassword(false);;
+      if (error.response) {
+        // Specific error message based on the response
+        const errorMessage = error.response.data.message || 'An error occurred. Please try again later.';
+        setForgotPasswordErrorMessage(errorMessage);
+      } else {
+        setForgotPasswordErrorMessage('An error occurred. Please try again later.');
+      }
+    } finally {
+      setIsResettingPassword(false);
     }
   };
   const handleAPIError = (error) => {
     if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
       setErrorMessage('Operation failed: ' + error.response.data.errors[0].msg);
-      console.error('Operation failed:', error.response.data.errors);
     } else {
       setErrorMessage('Operation failed. Please try again later.');
-      console.error('Operation failed:', error);
     }
   };
   const toggleSidebar = () => {
@@ -306,15 +331,15 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
   };
   const closeForgotPasswordModal = () => {
     setIsForgotPasswordOpen(false);
+    setForgotPasswordData({ email: '' }); // Reset the forgot password data
+    setForgotPasswordErrorMessage(''); // Clear any error messages
     setSuccessMessage('');
-    setErrorMessage('');
   };
+  
   const handleForgotPasswordInputChange = (e) => {
     setForgotPasswordData({ ...forgotPasswordData, email: e.target.value });
   };
-  const closeFileUpload = () => {
-    setIsFileUploadOpen(false);
-  };
+
   const handleUploadButtonClick = () => {
     if (!isLoggedIn) {
       setShowLoginPrompt(true);
@@ -323,12 +348,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
     }
     setIsModalOpen(true);
   };
-  const handleSearchUpdate = (results) => {
-    setSearchResults(results); // This updates the local state
-    if (onSearch) {
-      onSearch(results); // This lifts the state up to App.js
-    }
-  };
+
 
   return (
     <header className={`headerContainer ${isLoading ? 'loading' : ''}`}>
@@ -360,7 +380,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
               Upload
             </button>
             <h1>{facultyName}</h1>
-            {isFileUploadOpen && <FileUpload facultyId={facultyId} closeFileUpload={closeFileUpload} />}
+            {isFileUploadOpen && <FileUpload facultyId={facultyId}  />}
           </div>
         </div>
       )}
@@ -381,7 +401,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
         )}
       </div>
       {isFileUploadOpen && (
-        <FileUpload facultyId={facultyId} />
+        <FileUpload facultyId={facultyId} setIsModalOpen={setIsFileUploadOpen} />
       )}
 
       <Modal isOpen={isSignupOpen} onClose={closeSignupModal}>
@@ -430,7 +450,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
       <Modal isOpen={isForgotPasswordOpen} onClose={closeForgotPasswordModal} >
         <label htmlFor="username"><h1>Forget Password</h1></label>
         {forgotPasswordSuccessMessage && <div className="success-message">{forgotPasswordSuccessMessage}</div>}
-        {errorMessage && <div className="error-message">{errorMessage}</div>}
+        {forgotPasswordErrorMessage && <div className="error-message">{forgotPasswordErrorMessage}</div>}
         <form onSubmit={handleForgotPasswordSubmit}>
           {passwordResetEmail ? (
             <div className="form-group">
@@ -450,8 +470,9 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
 
         </form>
       </Modal>
-      <Modal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} >
+      <Modal isOpen={isLoginModalOpen} onClose={closeLoginModal}>
         <h1>Login</h1>
+        {loginErrorMessage && <div className="error-message">{loginErrorMessage}</div>}
         {loginValidationErrors.usernameOrEmail && <div className="error-message">{loginValidationErrors.usernameOrEmail}</div>}
         {loginValidationErrors.password && <div className="error-message">{loginValidationErrors.password}</div>}
         {loginSuccessMessage && <div className="success-message">{loginSuccessMessage}</div>}

@@ -45,7 +45,6 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
     setMessageTimeout(newTimeout);
 };
 
-// Cleanup on unmount
 useEffect(() => {
     return () => {
         clearTimeout(messageTimeout);
@@ -212,25 +211,25 @@ useEffect(() => {
           </div>
         );
 
-      case 'faculty':
-        return (
-          <div className="card" style={cardStyle} onClick={goToResourceDetail}>
-      <div className="card-content">
-        <h3 className="card-title">{document.Title || "Untitled"}</h3>
-        <h3 className="card-author">Author: {document.Author_first_name || "Unknown"} {document.Author_last_name || ""}</h3>
-          </div>
-          <div className="card-description">
-            {document.Description || "No description provided"}
-            <button className="favorite-button" onClick={(e) => { e.stopPropagation(); handleFavButtonClick(); }}>
-                {isFavorited ? '\u2605' : '\u2606'}
+        case 'faculty':
+          return (
+            <div className="card" style={cardStyle} onClick={goToResourceDetail}>
+              <div className="card-content">
+                <h3 className="card-title">{document.Title || "Untitled"}</h3>
+                <h3 className="card-author">Author: {document.Author_first_name || "Unknown"} {document.Author_last_name || ""}</h3>
+              </div>
+              <div className="card-description">
+                {document.Description || "No description provided"}
+                <button className="favorite-button" onClick={(e) => { e.stopPropagation(); handleFavButtonClick(); }}>
+                  {isFavorited ? '\u2605' : '\u2606'}
+                </button>
                 {showLoginPrompt && (
-                  <span className="login-tooltip">Log in to add</span>
+                  <div className="error-message">Please log in to add to favorites.</div>
                 )}
-              </button>
-          </div>
-            
-          </div>
-        );
+              </div>
+            </div>
+          );
+        
         case 'feedback':
           return (
             <div  className="feedbackcard"onClick={(e) => e.stopPropagation()}> 
@@ -279,7 +278,6 @@ useEffect(() => {
 <div>
     {actionSuccess && <div className="success-message">{actionSuccess}</div>}
     {actionError && <div className="error-message">{actionError}</div>}
-    {showLoginPrompt && <div className="login-prompt">Please log in to add to favorites.</div>}
     <CardContent onDelete={handleDelete} />
 
 

@@ -197,14 +197,12 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
     formData.append('lastname', authorLastName);
     formData.append('description', description);
     formData.append('file', file);
-    // If the cover image file was created from the PDF, append it; otherwise, append the uploaded image
     formData.append('img', coverImageFile || img);
   
     if (isAdmin) {
       formData.append('isApproved', true);
     }
   
-    // Attempt the upload
     try {
       const response = await axios.post(uploadURL, formData, {
         headers: {
@@ -215,12 +213,7 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
   
       if (response.status === 201) {
         setSuccessMessage(isAdmin ? 'Document uploaded successfully' : 'Document uploaded successfully waiting for approval');
-        setTitle('');
-        setAuthorFirstName('');
-        setAuthorLastName('');
-        setDescription('');
-        setFile(null);
-        setImg(null);
+       
       }
     } catch (uploadError) {
       if (uploadError.response && uploadError.response.data) {
@@ -249,15 +242,15 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setError('');
-    setSuccessMessage('');
   };
 
   return (
     <>
       {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={closeModal}>
-        {error && <div className="error-message">{error}</div>}
+        <Modal 
+  isOpen={isModalOpen} 
+  onClose={closeModal} 
+>        {error && <div className="error-message">{error}</div>}
         {successMessage && <div className="success-message">{successMessage}</div>}
 
           <Input placeholder="Title" type="text" id="title" name="title" value={title} onChange={handleFieldChange} />
