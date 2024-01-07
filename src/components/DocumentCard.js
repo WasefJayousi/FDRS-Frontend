@@ -252,6 +252,24 @@ useEffect(() => {
               </div>
             </div>
           );
+          case 'search':
+      return (
+        <div className="card search-card" style={cardStyle} onClick={goToResourceDetail}>
+          <div className="card-content">
+            <h3 className="card-title">{document.Title || "Untitled"}</h3>
+            <p className="card-author">Author: {document.Author_first_name} {document.Author_last_name}</p>
+          </div>
+          <div className="card-description">
+            {document.Description || "No description provided"}
+            <button className="favorite-button" onClick={(e) => { e.stopPropagation(); handleFavButtonClick(); }}>
+                {isFavorited ? '\u2605' : '\u2606'}
+                {showLoginPrompt && (
+                  <span className="login-tooltip">Log in to add</span>
+                )}
+              </button>
+          </div>
+          </div>
+      );
       default:
         return null;
     }

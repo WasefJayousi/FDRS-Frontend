@@ -27,7 +27,7 @@ const Input = ({ type, id, name, value, onChange, placeholder }) => (
 );
 
 
-const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
+const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => {
   const backendURL = 'https://fdrs-backend.up.railway.app';
   const axiosInstance = axios.create({ baseURL: backendURL });
   const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
@@ -348,7 +348,12 @@ const Header = ({ setIsModalOpen, isLoading, onSearch }) => {
       {isFacultyPage && (
         <div className="search-upload-container">
           <div className="search-container">
-            {<FeedbackForm authToken={authToken} onSearchResults={handleSearchUpdate} />}
+            { <FeedbackForm 
+              authToken={authToken} 
+              onSearch={onSearch}
+              showFeedbackButton={showFeedbackButton}
+            />
+            }
           </div>
           <div className="action-buttons">
             <button onClick={handleUploadButtonClick} className="authButton">

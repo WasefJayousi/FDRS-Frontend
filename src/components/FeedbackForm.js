@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 
-const FeedbackForm = ({ authToken, onSearchResults }) => {
+const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchPerformed, setSearchPerformed] = useState(false);
@@ -15,8 +15,9 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
   const authContext = useContext(AuthContext);
   const [feedbackSuccess, setFeedbackSuccess] = useState('');
   const [feedbackError, setFeedbackError] = useState('');
+  
   useEffect(() => {
-    if (searchPerformed && searchResults.length === 0) {
+    if (showFeedbackButton) {
       setShowSearchPrompt(true);
       setShowButton(true); 
       const timer = setTimeout(() => {
@@ -24,37 +25,14 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
       }, 4000);
       return () => clearTimeout(timer);
     }
-  }, [searchPerformed, searchResults]);
+  }, [showFeedbackButton]);
 
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
   const handleSearch = async () => {
-    setSearchPerformed(true);
-    if (!searchTerm.trim()) {
-      // If the search term is empty, reset the results and don't perform a search.
-      setSearchResults([]);
-      onSearchResults([]); // Inform the parent component that no search results are found.
-      return;
-    }
-    try {
-      const response = await axios.get(`${backendURL}/api_resource/search`, {
-        params: { term: searchTerm },
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-      setSearchResults(response.data); // Set the search results state.
-      onSearchResults(response.data); // Pass the filtered results to the parent component.
-      setSearchTerm(''); // Clear the search term if needed.
-      if (response.data.length === 0) {
-        // If no search results, show the prompt to submit feedback.
-        setShowSearchPrompt(true);
-      }
-    } catch (error) {
-      console.error('Search error:', error);
-      setSearchResults([]); // Reset the search results on error.
-      onSearchResults([]); // Inform the parent component that an error occurred.
-    }
+    onSearch(searchTerm);
   };
   
 
@@ -117,23 +95,24 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
           >
             <svg height="17" viewBox="0 0 1792 1792" width="17" xmlns="http://www.w3.org/2000/svg"><path d="M1216 832q0-185-131.5-316.5t-316.5-131.5-316.5 131.5-131.5 316.5 131.5 316.5 316.5 131.5 316.5-131.5 131.5-316.5zm512 832q0 52-38 90t-90 38q-54 0-90-38l-343-342q-179 124-399 124-143 0-273.5-55.5t-225-150-150-225-55.5-273.5 55.5-273.5 150-225 225-150 273.5-55.5 273.5 55.5 225 150 150 225 55.5 273.5q0 220-124 399l343 343q37 37 37 90z" /></svg>
           </button>
-          {searchPerformed && searchResults.length === 0 && showButton && (
-            <button
-              className="authButton"
-              onClick={submitFeedback}
-              style={{
-                padding: '10px 20px',
-                margin: '5px',
-                borderRadius: '5px',
-                border: 'none',
-                cursor: 'pointer',
-                backgroundColor: 'green',
-                color: 'white'
-              }}
-            >
-              Submit Feedback
-            </button>
-          )}
+          {showFeedbackButton && (
+                <button
+                    className="authButton"
+                    onClick={submitFeedback}
+                    style={{
+                        padding: '10px 20px',
+                        margin: '5px',
+                        borderRadius: '5px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        backgroundColor: 'green',
+                        color: 'white'
+                    }}
+                >
+                    Submit Feedback
+                </button>
+            )}
+
         </div>
       )}
        {feedbackSuccess && (
