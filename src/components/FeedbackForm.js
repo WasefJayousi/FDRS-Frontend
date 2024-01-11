@@ -2,12 +2,14 @@ import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
+import { RouteParamsContext } from './context/RouteParamsContext';
 
 const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchPerformed, setSearchPerformed] = useState(false);
   const [showSearchPrompt, setShowSearchPrompt] = useState(false);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [showButton, setShowButton] = useState(true);
   const location = useLocation();
   const isFacultyPage = location.pathname.includes('/faculty/');
@@ -15,6 +17,26 @@ const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
   const authContext = useContext(AuthContext);
   const [feedbackSuccess, setFeedbackSuccess] = useState('');
   const [feedbackError, setFeedbackError] = useState('');
+  const { routeParams } = useContext(RouteParamsContext);
+  const facultyId = routeParams ? routeParams.facultyId : null;
+  useEffect(() => {
+    // Set a delay for debouncing
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (debouncedSearchTerm) {
+      handleSearch();
+    }
+  }, [debouncedSearchTerm]);
+
+
   
   useEffect(() => {
     if (showFeedbackButton) {
@@ -28,11 +50,17 @@ const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
   }, [showFeedbackButton]);
 
   const handleInputChange = (e) => {
-    setSearchTerm(e.target.value);
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
+
+    // If the search term is empty, send an empty string as the search query
+    if (newSearchTerm === '') {
+      onSearch('', facultyId);
+    }
   };
 
   const handleSearch = async () => {
-    onSearch(searchTerm);
+    onSearch(debouncedSearchTerm,facultyId);
   };
   
 

@@ -5,19 +5,15 @@ import FacultyButtons from './FacultyButtons';
 import FileUpload from './FileUpload';
 import FeedbackForm from './FeedbackForm';
 import Modal from './Modal';
+import Sidebar from './Sidebar';
 import axios from 'axios';
 import './Header.css';
 import { RouteParamsContext } from './context/RouteParamsContext';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import './Sidebar.css';
 
-const Sidebar = () => {
-  return (
-    <div className="sidebar">
-      <FacultyButtons />
-    </div>
-  );
-}
+
+
 
 const Input = ({ type, id, name, value, onChange, placeholder }) => (
   <div className="form-group">
@@ -89,6 +85,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
       setIsSidebarOpen(false);
 
     }
+    setIsSidebarOpen(location.pathname === '/my-profile');
     if (tokenFromLink) {
       const fetchData = async () => {
         try {
@@ -199,7 +196,10 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
     try {
       const response = await axiosInstance.post(`${backendURL}/api_auth/register`, signupData);
       setSignupSuccessMessage('Registration successful!');
-    } catch (error) {
+      setTimeout(() => {
+        setIsSignupOpen(false);
+      }, 1000);   
+     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const backendErrors = error.response.data.errors.map(err => err.msg).join(", ");
         setSignupErrorMessage(backendErrors);
@@ -243,9 +243,14 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
         setIsLoggedIn(true);
         setIsAdmin(user.isAdmin);
         setUser(user);
-        setLoginSuccessMessage('Login Successful');
         setEmail('');
         setPassword('');
+        setLoginSuccessMessage('Login Successful');
+        // Close the modal after 1 second
+        setTimeout(() => {
+          setIsLoginModalOpen(false);
+        }, 1000);
+      
 
         if (updateLoginStatus) {
           updateLoginStatus(true, user.isAdmin, user);
@@ -258,10 +263,9 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
       console.error('Login error:', error);
       // Set a specific error message for incorrect username/password
       if (error.response && error.response.status === 401) { // Assuming 401 is the status code for unauthorized access
-        setLoginErrorMessage('Incorrect username or password.');
       } else {
         // Generic error message for other types of errors
-        setLoginErrorMessage('Login failed. Please try again later.');
+        setLoginErrorMessage('Incorrect username or password.');
       }
     }
     finally {
@@ -297,12 +301,15 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
       });
 
       if (response.data.message) {
-        setSuccessMessage(response.data.message);
-        setIsForgotPasswordOpen(false);
+        setForgotPasswordSuccessMessage('Password reset email sent!');
+        setTimeout(() => {
+          setIsForgotPasswordOpen(false);
+        }, 1000);
+        setForgotPasswordSuccessMessage('');
+
       }
     } catch (error) {
       if (error.response) {
-        // Specific error message based on the response
         const errorMessage = error.response.data.message || 'An error occurred. Please try again later.';
         setForgotPasswordErrorMessage(errorMessage);
       } else {
@@ -372,6 +379,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
               authToken={authToken} 
               onSearch={onSearch}
               showFeedbackButton={showFeedbackButton}
+              
             />
             }
           </div>

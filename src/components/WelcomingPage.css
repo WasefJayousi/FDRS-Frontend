@@ -1,0 +1,80 @@
+
+.arrow-container-top {
+  position: absolute;
+  left: 40px;
+  top: 90px; 
+  animation: bounce 1s infinite;
+  transform: translateX(-50%);
+}
+
+.arrow-top {
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 20px solid white;
+  display: block;
+  margin: 0 auto;
+}
+
+.arrow-text-top {
+  text-align: center;
+  display: block;
+  margin-top: 5px;
+  color: white;
+  width: auto; 
+  overflow: visible; 
+}
+
+
+.arrow-to-profile{
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent; 
+  border-bottom: 20px solid white;
+  position: absolute;
+  right: 10px; 
+  top: 90px; 
+  transform: translateX(-50%); 
+  animation: bounce 1s infinite;
+}
+
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  40% {
+    transform: translateX(-50%) translateY(-20px);
+  }
+  60% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+
+.bottom-left-text {
+  position: absolute;
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+  .bottom-left-text {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.wlcImage img {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+}

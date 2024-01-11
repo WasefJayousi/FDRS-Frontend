@@ -1,29 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext} from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import axios from 'axios';
-
 import WelcomingPage from './WelcomingPage';
 import ResourcePage from './ResourcePage';
 import FacultyPage from './FacultyPage';
 import PasswordReset from './PasswordReset';
 import MyProfile from './MyProfile';
-import AboutUs from './AboutUs';
 import Header from './Header';
-import Footer from './Footer';
 import FileUpload from './FileUpload';
-
 import { AuthProvider } from './context/AuthContext';
-import { RouteParamsProvider } from './context/RouteParamsContext';
-
+import { RouteParamsProvider} from './context/RouteParamsContext';
+import { ActiveSectionProvider } from './context/ActiveSectionContext';
 import './App.css';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [searchResults, setSearchResults] = useState([]); // State to store search results
+  const [searchResults, setSearchResults] = useState([]); 
   const [showFeedbackButton, setShowFeedbackButton] = useState(false);
   const backendURL = 'https://fdrs-backend.up.railway.app';
+  useEffect(() => {
+    if (searchResults.length > 0) {
+      const timer = setTimeout(() => {
+        setSearchResults([]);
+      }, 4000); 
 
+      return () => clearTimeout(timer); 
+    }
+  }, [searchResults]); 
   useEffect(() => {
     const configureAxios = () => {
       const token = localStorage.getItem('token');
@@ -59,14 +63,14 @@ function App() {
     setupAxiosInterceptors();
   }, []);
 
-  const handleSearch = async (searchTerm) => {
+  const handleSearch = async (searchTerm, facultyId) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${backendURL}/api_resource/search`, {
+      const response = await axios.get(`${backendURL}/api_resource/search/${facultyId}`, {
         params: { term: searchTerm }
       });
       setSearchResults(response.data);
-      setShowFeedbackButton(response.data.length === 0); // Show button if no results
+      setShowFeedbackButton(response.data.length === 0); 
     } catch (error) {
       if (error.response && error.response.status === 404) {
         setShowFeedbackButton(true); // Show button on 404 error
@@ -76,7 +80,8 @@ function App() {
     } finally {
       setLoading(false);
     }
-};
+  };
+  
 
 
   const ProtectedRoute = ({ component: Component, ...rest }) => {
@@ -94,36 +99,37 @@ function App() {
       />
     );
   };
+
   return (
     <Router>
-    <AuthProvider>
-      <RouteParamsProvider>
-        <div className="App">
-        <Header 
-              setIsModalOpen={setIsModalOpen} 
-              onSearch={handleSearch} 
-              showFeedbackButton={showFeedbackButton}
-            />
-          {isModalOpen && <FileUpload isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />}
-          <div className="contentContainer">
-            <Switch>
-              <Route exact path="/">
-                <Redirect to="/welcomingpage" />
-              </Route>
-              <Route path="/welcomingpage" exact component={WelcomingPage} />
-              <Route path="/about-us" exact component={AboutUs} />
-              <Route path="/reset-password" component={PasswordReset} />
-              <Route path="/my-profile" component={MyProfile} />
-              <Route path="/faculty/:facultyId" render={(props) => <FacultyPage {...props} searchResults={searchResults} />} />
-              <Route path="/resource/:resourceId" component={ResourcePage} />
-            </Switch>
-          </div>
-          <Footer/>
-        </div>
-      </RouteParamsProvider>
-    </AuthProvider>
-  </Router>
-);
+      <AuthProvider>
+        <RouteParamsProvider>
+          <ActiveSectionProvider>
+            <div className="App">
+              <Header 
+                setIsModalOpen={setIsModalOpen} 
+                onSearch={handleSearch} 
+                showFeedbackButton={showFeedbackButton}
+              />
+              {isModalOpen && <FileUpload isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />}
+              <div className="contentContainer">
+                <Switch>
+                  <Route exact path="/">
+                    <Redirect to="/welcomingpage" />
+                  </Route>
+                  <Route path="/welcomingpage" exact component={WelcomingPage} />
+                  <Route path="/reset-password" component={PasswordReset} />
+                  <ProtectedRoute path="/my-profile" component={MyProfile} /> {/* Protected route for My Profile */}
+                  <Route path="/faculty/:facultyId" render={(props) => <FacultyPage {...props} searchResults={searchResults} />} />
+                  <Route path="/resource/:resourceId" component={ResourcePage} />
+                </Switch>
+              </div>
+            </div>
+          </ActiveSectionProvider>
+        </RouteParamsProvider>
+      </AuthProvider>
+    </Router>
+  );
 }
 
 export default App;

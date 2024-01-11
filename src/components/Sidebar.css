@@ -112,3 +112,58 @@ div.content {
 
   }
 }
+.social-buttons a {
+  display: flex;
+  text-decoration: none;
+  color: white;
+  transition: background-color 0.3s, transform 0.3s;
+  background-color: #333;
+  padding: 10px 20px;
+  border: none;
+  margin-bottom: 10px;
+  width: 100%; 
+  text-align: left;
+  border-radius: 5px;
+  transition: background-color 0.3s, transform 0.3s;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.social-buttons a:hover {
+  transform: translateX(10px);
+  background-color: #e8e8e8;
+}
+
+.social-buttons img {
+  display: block; 
+  max-width: 24px; 
+  max-height: 24px; 
+  width: auto; 
+  height: auto; 
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+
+.sidebar button {
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  margin-bottom: 10px;
+  width: 100%; 
+  text-align: left;
+  border-radius: 5px;
+  transition: background-color 0.3s, transform 0.3s;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.sidebar button:hover {
+  background-color: #e8e8e8;
+  transform: translateX(10px);
+}
+
+.sidebar button.active {
+  background-color: #666;
+}

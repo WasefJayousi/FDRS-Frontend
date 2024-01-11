@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 import { Link } from 'react-router-dom';
-import Header from './Header'; // Ensure this is the correct path
 import './App.css';
 
 const FacultyButtons = () => {
@@ -12,7 +11,8 @@ const FacultyButtons = () => {
   const history = useHistory();
   const [error, setError] = useState('');
   const { user, authToken,refreshTokenFunc } = useContext(AuthContext);
-  
+  const aboutUsImageUrl = '/about-us.png'; // The path to your "About Us" image
+
   useEffect(() => {
     const fetchFaculties = async () => {
       try {
@@ -33,7 +33,7 @@ const FacultyButtons = () => {
     fetchFaculties();
   }, []);
 
-  if (loading) return <div> <Header isLoading={loading} /> {/* @saif */}  </div>;
+  if (loading) return <div> loading </div>;
   if (error) return <div>Error: {error}</div>;
 
   const goToFacultyPage = (faculty) => {
@@ -53,6 +53,7 @@ const FacultyButtons = () => {
           // Convert faculty name to kebab-case for the image filename
           const imageUrl = `/images/${faculty.FacultyName.toLowerCase().replace(/ /g, '-')}.png`;
           return (
+
             <Link 
               key={faculty._id}
               to={{
@@ -62,13 +63,16 @@ const FacultyButtons = () => {
               className="faculty-button"
               style={{ backgroundImage: `url(${imageUrl})` }}
             >
-              {faculty.FacultyName}
+              <b>{faculty.FacultyName}</b>
+              
             </Link>
+            
           );
         })
       ) : (
         <p>No faculties found.</p>
       )}
+     
     </div>
   );
 };
