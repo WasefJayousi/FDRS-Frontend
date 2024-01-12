@@ -104,8 +104,16 @@
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
   z-index: 1;
-}
 
+  
+}
+.card-description-text {
+  max-height: 90%; /* This will limit the height of the text container */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 10px; /* Add padding on the sides if needed */
+}
 .card:hover {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   transform: scale(1.02);

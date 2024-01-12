@@ -46,6 +46,7 @@ const FacultyPage = ({ searchResults }) => {
       document.body.style.overflow = '';
     };
   }, [backgroundImage]);
+  
   useEffect(() => {
     setRouteParams({ facultyId });
   }, [facultyId, setRouteParams]);

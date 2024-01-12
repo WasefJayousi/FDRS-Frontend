@@ -33,12 +33,13 @@ const ResourcePage = () => {
   const [actionSuccess, setActionSuccess] = useState('');
   const [actionError, setActionError] = useState('');
   const [messageTimeout, setMessageTimeout] = useState(null);
+
   useEffect(() => {
     setInProp(true);
   }, []);
   useEffect(() => {
-    if (authToken && resourceId) {
-      const fetchFavorites = async () => {
+    const fetchFavorites = async () => {
+      if (authToken && resourceId) {
         try {
           const response = await axios.get(`${backendURL}/api_user/profile`, {
             headers: { Authorization: `Bearer ${authToken}` },
@@ -48,11 +49,12 @@ const ResourcePage = () => {
         } catch (error) {
           console.error(`Error fetching favorites: ${error}`);
         }
-      };
-
-      fetchFavorites();
-    }
-  }, [authToken, resourceId]);
+      }
+    };
+  
+    fetchFavorites();
+  }, [authToken, resourceId, resourceDetails]); 
+  
 
   useEffect(() => {
     const fetchResourceDetails = async () => {
@@ -87,15 +89,23 @@ const ResourcePage = () => {
     </div>;
   }
   const setMessageWithTimer = (successMsg, errorMsg) => {
+    // Clear any existing timeout to avoid multiple timers running
+    if (messageTimeout) {
+      clearTimeout(messageTimeout);
+    }
+  
     setActionSuccess(successMsg);
     setActionError(errorMsg);
-    clearTimeout(messageTimeout);
+  
+    // Set a new timeout to clear the messages
     const newTimeout = setTimeout(() => {
-        setActionSuccess('');
-        setActionError('');
+      setActionSuccess('');
+      setActionError('');
     }, 3000);
+  
     setMessageTimeout(newTimeout);
-};
+  };
+  
 const resetMessages = () => {
   setActionSuccess('');
   setActionError('');
@@ -110,15 +120,22 @@ const toggleFavorite = async () => {
   const action = isFavorited ? 'unfavorite' : 'favorite';
   try {
     const method = isFavorited ? 'delete' : 'post';
-    await axios[method](`${backendURL}/api_favorite/resources/${document._id}/${action}`, {
+    const response = await axios[method](`${backendURL}/api_favorite/resources/${resourceDetails._id}/${action}`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
-    setMessageWithTimer(`Resource has been ${isFavorited ? 'removed from' : 'added to'} favorites.`, '');
-    setIsFavorited(!isFavorited);
+
+    if (response.status === 200) {
+      setIsFavorited(!isFavorited);
+      setMessageWithTimer(`Resource has been ${isFavorited ? 'removed from' : 'added to'} favorites.`, '');
+    } else {
+      setMessageWithTimer('', 'Failed to update favorite status.');
+    }
   } catch (error) {
+    console.error('Failed to toggle favorite status:', error);
     setMessageWithTimer('', 'Failed to update favorite status.');
   }
 };
+
   const handleFavButtonClick = () => {
     if (!isLoggedIn) {
       setShowLoginPrompt(true);
@@ -140,7 +157,8 @@ const toggleFavorite = async () => {
   return (
     <CSSTransition in={inProp} timeout={300} classNames="fade" appear>
    <div className="resource-container">
-  
+   {actionSuccess && <div className="success-message">{actionSuccess}</div>}
+      {actionError && <div className="error-message">{actionError}</div>}
         <div className="resource-header">
           {resourceDetails.Cover && (
             <img 
@@ -177,9 +195,10 @@ const toggleFavorite = async () => {
           >
             Download
           </a>
-          <button className="favorite-button" onClick={(e) => { e.stopPropagation(); handleFavButtonClick(); }}>
-                  {isFavorited ? '\u2605' : '\u2606'}
-                </button>
+          <button className="favorite-button" onClick={handleFavButtonClick}>
+  {isFavorited ? '\u2605' : '\u2606'}
+</button>
+
                 {showLoginPrompt && (
                   <div className="error-message">Please log in to add to favorites.</div>
                 )}

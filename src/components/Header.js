@@ -195,10 +195,15 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
 
     try {
       const response = await axiosInstance.post(`${backendURL}/api_auth/register`, signupData);
+      setSignupData({ username: '', email: '', password: '' });
+      setPasswordConfirm('');
+      setSignupErrorMessage('');
+      setSignupValidationErrors({});
       setSignupSuccessMessage('Registration successful!');
       setTimeout(() => {
         setIsSignupOpen(false);
-      }, 1000);   
+      }, 1000);
+      setSignupSuccessMessage('');
      } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const backendErrors = error.response.data.errors.map(err => err.msg).join(", ");
@@ -243,14 +248,16 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
         setIsLoggedIn(true);
         setIsAdmin(user.isAdmin);
         setUser(user);
-        setEmail('');
+        setUsernameOrEmail('');
         setPassword('');
+        // Any other state resets related to login
+        setLoginErrorMessage('');
+        setLoginValidationErrors({});
         setLoginSuccessMessage('Login Successful');
-        // Close the modal after 1 second
         setTimeout(() => {
           setIsLoginModalOpen(false);
         }, 1000);
-      
+        setLoginSuccessMessage('');
 
         if (updateLoginStatus) {
           updateLoginStatus(true, user.isAdmin, user);
@@ -301,6 +308,8 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
       });
 
       if (response.data.message) {
+        setForgotPasswordData({ email: '' });
+        setForgotPasswordErrorMessage('');
         setForgotPasswordSuccessMessage('Password reset email sent!');
         setTimeout(() => {
           setIsForgotPasswordOpen(false);

@@ -34,6 +34,7 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
   const { routeParams } = useContext(RouteParamsContext);
   const facultyId = routeParams ? routeParams.facultyId : null;
   const [validationErrors, setValidationErrors] = useState({});
+  const [hasRightsChecked, setHasRightsChecked] = useState(false);
   const backendURL = 'https://fdrs-backend.up.railway.app';  
   const uploadURL = facultyId ? `${backendURL}/api_resource/create/${facultyId}` : null;
 
@@ -43,10 +44,8 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
   
       fileReader.onload = function() {
         const typedArray = new Uint8Array(this.result);
-        console.log('File loaded, starting PDF.js getDocument...');
   
         getDocument(typedArray).promise.then(pdf => {
-          console.log('PDF loaded, getting first page...');
           pdf.getPage(1).then(page => {
             const viewport = page.getViewport({ scale: 1 });
             const canvas = document.createElement('canvas');
@@ -54,29 +53,23 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
             canvas.width = viewport.width;
             const ctx = canvas.getContext('2d');
   
-            console.log('Rendering page...');
             page.render({ canvasContext: ctx, viewport: viewport }).promise.then(() => {
-              console.log('Page rendered, creating blob...');
               canvas.toBlob(blob => {
-                console.log('Blob created, resolving promise...');
-                resolve(blob);
+                const uniqueFilename = `cover-${Date.now()}.jpg`;
+                resolve({ blob, filename: uniqueFilename });
               }, 'image/jpeg');
             });
           });
         }).catch(error => {
-          console.error('Error in PDF.js getDocument or getPage:', error);
           reject(error);
         });
       };
   
-      fileReader.onerror = (error) => {
-        console.error('Error reading file:', error);
-        reject(error);
-      };
-  
+      fileReader.onerror = reject;
       fileReader.readAsArrayBuffer(file);
     });
   };
+  
   
   const validateField = (fieldName, value) => {
     let errors = { ...validationErrors };
@@ -106,8 +99,16 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
           delete errors['description'];
         }
         break;
-      default:
-        break;
+        case 'hasRights':
+          if (!hasRightsChecked) {
+            errors[fieldName] = "You must confirm that you have the rights to upload this document.";
+          } else {
+            delete errors[fieldName];
+          }
+          break;
+    
+        default:
+          break;
     }
     setValidationErrors(errors);
   };
@@ -160,7 +161,21 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
     file.type.startsWith('application') ? setFile(file) : setImg(file);
     setError('');
   };
-
+  const handleCheckboxChange = (e) => {
+    const isChecked = e.target.checked;
+    setHasRightsChecked(isChecked);
+  
+    // Update validation errors for the checkbox
+    setValidationErrors(prevErrors => {
+      const updatedErrors = { ...prevErrors };
+      if (isChecked) {
+        delete updatedErrors.hasRights; // Remove the error if checkbox is checked
+      } else {
+        updatedErrors.hasRights = "You must confirm that you have the rights to upload this document."; // Add the error if unchecked
+      }
+      return updatedErrors;
+    });
+  };
   const handleUpload = async () => {
     setIsLoading(true);
     setError('');
@@ -193,8 +208,8 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
     // If there's no image but there is a PDF file, convert the first page to an image
     if (!img && file) {
       try {
-        const coverImageBlob = await convertPdfToImage(file);
-        coverImageFile = new File([coverImageBlob], 'cover.jpg', { type: 'image/jpeg' });
+        const { blob: coverImageBlob, filename: uniqueFilename } = await convertPdfToImage(file);
+        coverImageFile = new File([coverImageBlob], uniqueFilename, { type: 'image/jpeg' });
         setImg(coverImageFile); // Update the state to reflect the new cover image
       } catch (conversionError) {
         setError("Error converting PDF to image");
@@ -283,7 +298,20 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
 
           <Input placeholder="Related Image" type="file" id="imageFile" name="img" accept="image/jpeg, image/jpg, image/png" onChange={handleImgChange} />
           {validationErrors.img && <div className="error-message">{validationErrors.img}</div>}
-
+          <div className="form-group checkbox-container">
+  <label htmlFor="hasRights" className="checkbox-label">
+    <input
+      type="checkbox"
+      id="hasRights"
+      checked={hasRightsChecked}
+      onChange={handleCheckboxChange}
+      className="checkbox-input"
+    />
+    <span className="custom-checkbox"></span>
+    I confirm that I have the rights to upload this document.
+  </label>
+  {validationErrors.hasRights && <div className="error-message">{validationErrors.hasRights}</div>}
+</div>
           {isLoading && <div>Loading...</div>}
 
           <div className="modal-footer">

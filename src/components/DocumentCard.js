@@ -151,7 +151,12 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
     };
 
 
-
+    const truncateText = (text, maxLength) => {
+      if (text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+      }
+      return text;
+    };
     switch (cardType) {
       case 'adminActions':
         return (
@@ -218,7 +223,9 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
               <h3 className="card-author">Author: {document.Author_first_name || "Unknown"} {document.Author_last_name || ""}</h3>
             </div>
             <div className="card-description">
-              {document.Description || "No description provided"}
+  <div className="card-description-text">
+    {truncateText(document.Description || "No description provided", 200)}
+  </div>
               <button className="favorite-button" onClick={(e) => { e.stopPropagation(); handleFavButtonClick(); }}>
                 {isFavorited ? '\u2605' : '\u2606'}
               </button>
