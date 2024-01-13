@@ -142,9 +142,12 @@ const FacultyPage = ({ searchResults }) => {
               />
             ))
           ) : (
+            <div className='no-resources'>
             <p>No resources found {showSearchResults ? "for this search" : "for this faculty"}.</p>
+            </div>
           )}
         </div>
+        
       </div>
     </CSSTransition>
   );

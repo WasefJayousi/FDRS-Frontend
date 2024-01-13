@@ -12,6 +12,7 @@
   }
 }
 
+
 .ResourcesfacultyName {
   border: 3px solid rgba(0, 0, 0, 0);
   background: rgba(0, 0, 0, 0.4);
@@ -230,6 +231,14 @@ html, body, #root {
 h2{
   background-color: rgba(0, 0, 0, 0.7);
   border-radius: 5px;
+}
+
+
+.no-resources p {
+  font-size: large;
+  line-height: 1.8;
+  background: rgba(0, 0, 0, 0.596);
+  
 }
 
 .checkbox-container {
