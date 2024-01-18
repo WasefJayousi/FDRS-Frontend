@@ -184,8 +184,8 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
       return;
     }
 
-    if (signupData.password.length < 6) {
-      setSignupErrorMessage('Password must be at least 6 characters long.');
+    if (signupData.password.length < 8) {
+      setSignupErrorMessage('Password must be at least 8 characters long.');
       return;
     }
     if (passwordConfirm !== signupData.password) {

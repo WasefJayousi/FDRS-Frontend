@@ -184,7 +184,8 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
     validateField('authorFirstName', authorFirstName);
     validateField('authorLastName', authorLastName);
     validateField('description', description);
-  
+    validateField('hasRights', hasRightsChecked);
+
     // Validation errors setup for files
     let fileErrors = {};
     if (!file) {
@@ -194,7 +195,7 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
   
     const hasErrors = () => {
       // The form has errors if there are validation errors or if the file is missing
-      return Object.keys(validationErrors).length > 0 || fileErrors.file;
+      return Object.keys(validationErrors).length > 0 || fileErrors.file || !hasRightsChecked;
     };
   
     if (hasErrors()) {
