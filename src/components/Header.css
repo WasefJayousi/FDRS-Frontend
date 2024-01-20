@@ -182,8 +182,8 @@
 .authButton:hover,
 .authButtonL:hover,
 .sidebarToggle:hover {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.507);
-  background: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 10px 20px rgba(116, 116, 116, 0.507);
+  background: rgba(95, 95, 95, 0.8);
 }
 
 .action-buttons .authButton:hover {
@@ -302,7 +302,7 @@
 .upload-modal-content input {
   display: block;
   height: 30px;
-  width: 100%;
+  width: 94%;
   background-color: rgba(255, 255, 255, 0.07);
   border-radius: 3px;
   padding: 0 10px;
@@ -520,9 +520,12 @@
 }
 
 .feedbackError {
+  position: absolute;
   background: #6a0000;
   height: 35px;
+  width: 250px;
   border-radius: 10px;
+  font-size: larger;
   z-index: 5;
 }
 
@@ -552,5 +555,6 @@
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent backdrop */
   z-index: 1000; /* Ensure it's above other content */
 }
+
 
 

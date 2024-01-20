@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from './context/AuthContext';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 import './DocumentCard.css';
 
 const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, onDelete }) => {
@@ -16,6 +17,25 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
   const [actionSuccess, setActionSuccess] = useState('');
   const [actionError, setActionError] = useState('');
   const [messageTimeout, setMessageTimeout] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const handleConfirmDelete = async () => {
+    try {
+      await onDelete(document._id);
+      setMessageWithTimer('Resource deleted successfully.', '');
+    } catch (error) {
+      setMessageWithTimer('Failed to delete resource.');
+    }
+    setShowConfirmation(false);
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirmation(false);
+  };
+
+  const handleDeleteClick = () => {
+    setShowConfirmation(true);
+  };
+
   useEffect(() => {
     if (authToken && document && document._id) {
       const fetchFavorites = async () => {
@@ -183,23 +203,28 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
           </div>
         );
 
-      case 'resource':
-        return (
-          <div className="card" style={cardStyle} onClick={goToResourceDetail}>
-            <div className="card-content">
-              <h3 className="card-title">{document.Title || "Untitled"}</h3>
-            </div>
-            <div className="card-description">
-              <a href={`${backendURL}/api_resource/download/${document._id}`} target='_blank' className="downloadButton">Download</a>
-              {onDelete && (
-                <button className="trashButton" onClick={(e) => { e.stopPropagation(); onDelete(document._id); }}>
-                  🗑️
-                </button>
-
+        case 'resource':
+          return (
+            <div>
+              {actionSuccess && <div className="success-message">{actionSuccess}</div>}
+              {actionError && <div className="error-message">{actionError}</div>}
+              <div className="card" style={cardStyle} onClick={goToResourceDetail}>
+                <div className="card-description">
+                  <a href={`${backendURL}/api_resource/download/${document._id}`} target='_blank' className="downloadButton">Download</a>
+                  <button className="trashButton" onClick={(e) => { e.stopPropagation(); handleDeleteClick(); }}>
+                    🗑️
+                  </button>
+                </div>
+              </div>
+        
+              {showConfirmation && (
+                <DeleteConfirmationModal
+                  onCancel={handleCancelDelete}
+                  onConfirm={handleConfirmDelete}
+                />
               )}
             </div>
-          </div>
-        );
+          );
       case 'favorite':
         return (
           <div className="card" style={cardStyle} onClick={goToResourceDetail}>

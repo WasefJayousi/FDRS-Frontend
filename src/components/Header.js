@@ -250,14 +250,12 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
         setUser(user);
         setUsernameOrEmail('');
         setPassword('');
-        // Any other state resets related to login
         setLoginErrorMessage('');
         setLoginValidationErrors({});
         setLoginSuccessMessage('Login Successful');
         setTimeout(() => {
           setIsLoginModalOpen(false);
         }, 1000);
-        setLoginSuccessMessage('');
 
         if (updateLoginStatus) {
           updateLoginStatus(true, user.isAdmin, user);
@@ -268,15 +266,13 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
       }
     } catch (error) {
       console.error('Login error:', error);
-      // Set a specific error message for incorrect username/password
-      if (error.response && error.response.status === 401) { // Assuming 401 is the status code for unauthorized access
+      if (error.response && error.response.status === 401) { 
       } else {
-        // Generic error message for other types of errors
         setLoginErrorMessage('Incorrect username or password.');
       }
     }
     finally {
-      setLoading(false); // End loading
+      setLoading(false); 
     }
   };
   const handleLogout = async () => {
@@ -311,10 +307,10 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
         setForgotPasswordData({ email: '' });
         setForgotPasswordErrorMessage('');
         setForgotPasswordSuccessMessage('Password reset email sent!');
+        setForgotPasswordSuccessMessage('');
         setTimeout(() => {
           setIsForgotPasswordOpen(false);
         }, 1000);
-        setForgotPasswordSuccessMessage('');
 
       }
     } catch (error) {
@@ -404,7 +400,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
       <div className="authButtons">
         {isLoggedIn ? (
           <div className='button'>
-            <button className="authButtonL" onClick={handleLogout}>🔚
+            <button className="authButtonL" onClick={handleLogout}>Logout
             </button>
             <button onClick={goToUserProfile} className="profile-button">
               <img src={`${process.env.PUBLIC_URL}/img_avatar.png`} alt="Profile" />

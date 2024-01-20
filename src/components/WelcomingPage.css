@@ -1,10 +1,16 @@
 
 .arrow-container-top {
-  position: absolute;
+  position: fixed;
   left: 40px;
   top: 90px; 
   animation: bounce 1s infinite;
   transform: translateX(-50%);
+}
+
+@media screen and (max-width: 768px) {
+  .arrow-container-top {
+    transform: translateX(-50%);
+  }
 }
 
 .arrow-top {
@@ -14,7 +20,6 @@
   border-right: 20px solid transparent;
   border-bottom: 20px solid white;
   display: block;
-  margin: 0 auto;
 }
 
 .arrow-text-top {
@@ -26,6 +31,15 @@
   overflow: visible; 
 }
 
+@media screen and (max-width: 768px) {
+  .arrow-top {
+    margin: 10px auto;
+  }
+
+  .arrow-text-top {
+    margin-top: 10px;
+  }
+}
 
 .arrow-to-profile{
   width: 0;
@@ -33,11 +47,17 @@
   border-left: 20px solid transparent;
   border-right: 20px solid transparent; 
   border-bottom: 20px solid white;
-  position: absolute;
+  position: fixed;
+  top: 90px;
   right: 10px; 
-  top: 90px; 
   transform: translateX(-50%); 
   animation: bounce 1s infinite;
+}
+
+@media screen and (max-width: 768px) {
+  .arrow-to-profile {
+    transform: translateX(-50%);
+  }
 }
 
 
@@ -55,26 +75,37 @@
 
 
 .bottom-left-text {
-  position: absolute;
-  top: 50%; 
   left: 50%; 
   transform: translate(-50%, -50%); 
-  display: flex;
+  position: relative;
   align-items: center;
   justify-content: center;
 }
 
 @media screen and (max-width: 768px) {
   .bottom-left-text {
-    position: fixed;
+    display: flex;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
   }
 }
+.wlcImage{
+  position: relative;
+  left: 0;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
 .wlcImage img {
   width: 100%;
-  max-width: 500px;
+  max-width: 700px;
   height: auto;
+}
+
+.welcome-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
 }
