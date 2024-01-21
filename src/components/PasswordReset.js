@@ -96,8 +96,8 @@ const PasswordReset = () => {
   };
   
   return (
-    
-      <div className="password-reset-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
+    <div className="upload-modal-content">
+
         <h1>Reset Your Password</h1>
         {message && <div className="message">{message}</div>}
         {!isTokenValid ? (
