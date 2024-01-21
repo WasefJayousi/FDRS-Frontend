@@ -18,6 +18,10 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
   const [actionError, setActionError] = useState('');
   const [messageTimeout, setMessageTimeout] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [authorizationMessage, setAuthorizationMessage] = useState('');
+  const [isAuthorizationMessageVisible, setIsAuthorizationMessageVisible] = useState(false);
+
+
   const handleConfirmDelete = async () => {
     try {
       await onDelete(document._id);
@@ -115,30 +119,49 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
   
   
 
+  const showAuthorizationMessage = (message) => {
+    setAuthorizationMessage(message);
+    setIsAuthorizationMessageVisible(true);
+    setTimeout(() => {
+      setIsAuthorizationMessageVisible(false);
+    }, 5000); // Hide the message after 5 seconds
+  };
+
   const authorizeResource = async (resourceId) => {
     try {
-      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`,
+      const response = await axios.post(
+        `${backendURL}/api_user/admin/acceptance/${resourceId}`,
         { accept: true },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
+      console.log('Authorize response:', response); // Debugging log
       if (response.status === 200) {
+        showAuthorizationMessage('Resource successfully authorized.');
+        // Remove the document from the state to update the UI
         setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
       }
     } catch (error) {
       console.error('Error authorizing the resource:', error);
+      showAuthorizationMessage('Failed to authorize the resource. Please try again later.');
     }
   };
+  
   const unauthorizeResource = async (resourceId) => {
     try {
-      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`,
+      const response = await axios.post(
+        `${backendURL}/api_user/admin/acceptance/${resourceId}`,
         { accept: false },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
+      console.log('Unauthorize response:', response); // Debugging log
       if (response.status === 200) {
+        showAuthorizationMessage('Resource successfully unauthorized.');
+        // Remove the document from the state to update the UI
         setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
       }
     } catch (error) {
       console.error('Error unauthorizing the resource:', error);
+      showAuthorizationMessage('Failed to unauthorize the resource. Please try again later.');
     }
   };
 
@@ -323,6 +346,9 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
 
   return (
     <div>
+      {isAuthorizationMessageVisible && (
+          <div className="authorization-message">{authorizationMessage}</div>
+        )}
       {actionSuccess && <div className="success-message">{actionSuccess}</div>}
       {actionError && <div className="error-message">{actionError}</div>}
       <CardContent onDelete={handleDelete} />

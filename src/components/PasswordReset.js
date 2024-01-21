@@ -151,17 +151,16 @@ const PasswordReset = () => {
         <p>Token is invalid or expired. Please request a new password reset.</p>
       ) : (
         <form onSubmit={handleSubmit}>
-          {/* New Password Input */}
           <div className="form-group1">
             <label className='input-Box' htmlFor="password">New Password:</label>
             <div className="password-field">
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="New Password"
-                name="password" // Corrected to use name attribute for password
+                name="password" 
                 id="password"
                 value={password}
-                onChange={handlePasswordChange} // Updated to use handlePasswordChange
+                onChange={handlePasswordChange} 
                 required
               />
               <span onClick={togglePasswordVisibility}>

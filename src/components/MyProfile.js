@@ -24,15 +24,12 @@ const MyProfile = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const location = useLocation(); 
   const [validationErrors, setValidationErrors] = useState({});
-  const [updateSuccess, setUpdateSuccess] = useState('');
-  const [updateError, setUpdateError] = useState('');
   const history = useHistory();
   const isProfilePage = location.pathname.includes(`/my-profile`);
   const backgroundImage = `/img_avatar.png`;
   const { activeSection } = useContext(ActiveSectionContext);
-  const [authorizationSuccess, setAuthorizationSuccess] = useState('');
-  const [unauthorizationSuccess, setUnauthorizationSuccess] = useState('');
-
+  const [authorizationMessage, setAuthorizationMessage] = useState('');
+  const [isAuthorizationMessageVisible, setIsAuthorizationMessageVisible] = useState(false);
 
 
   const validateEmail = (email) => {
@@ -221,41 +218,51 @@ const MyProfile = () => {
   };
 
 
-  const handleServerResponse = (response, successMessage) => {
-    if (response.status === 200) {
-      setAuthorizationSuccess(successMessage);
-      setTimeout(() => setAuthorizationSuccess(''), 5000);
-    } else {
-      console.error('Server responded with status:', response.status);
-    }
+  const showAuthorizationMessage = (message) => {
+    setAuthorizationMessage(message);
+    setIsAuthorizationMessageVisible(true);
+    setTimeout(() => {
+      setIsAuthorizationMessageVisible(false);
+    }, 5000); // Hide the message after 5 seconds
   };
-  
+
   const authorizeResource = async (resourceId) => {
     try {
-      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`, 
+      const response = await axios.post(
+        `${backendURL}/api_user/admin/acceptance/${resourceId}`,
         { accept: true },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
-      handleServerResponse(response, 'Resource successfully authorized.');
-      setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
+      console.log('Authorize response:', response); // Debugging log
+      if (response.status === 200) {
+        showAuthorizationMessage('Resource successfully authorized.');
+        // Remove the document from the state to update the UI
+        setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
+      }
     } catch (error) {
       console.error('Error authorizing the resource:', error);
+      showAuthorizationMessage('Failed to authorize the resource. Please try again later.');
     }
   };
   
   const unauthorizeResource = async (resourceId) => {
     try {
-      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`, 
+      const response = await axios.post(
+        `${backendURL}/api_user/admin/acceptance/${resourceId}`,
         { accept: false },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
-      handleServerResponse(response, 'Resource successfully unauthorized.');
-      setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
+      console.log('Unauthorize response:', response); // Debugging log
+      if (response.status === 200) {
+        showAuthorizationMessage('Resource successfully unauthorized.');
+        // Remove the document from the state to update the UI
+        setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
+      }
     } catch (error) {
       console.error('Error unauthorizing the resource:', error);
+      showAuthorizationMessage('Failed to unauthorize the resource. Please try again later.');
     }
   };
-
 
   const handleCardClick = (resourceId) => {
     history.push(`/resource/${resourceId}`);
@@ -302,9 +309,11 @@ const MyProfile = () => {
   return (
     <div className="profile-container">
       <div className="profile-content">
-      {authorizationSuccess && <div className="success-message">{authorizationSuccess}</div>}
-        {unauthorizationSuccess && <div className="success-message">{unauthorizationSuccess}</div>}
-
+      {isAuthorizationMessageVisible && (
+          <div className="authorization-message">{authorizationMessage}</div>
+        )}
+    
+  
         {showSuccessMessage && (
           <div className="success-message-header">{successMessage}</div>
         )}
