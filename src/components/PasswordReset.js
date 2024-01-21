@@ -105,7 +105,7 @@ const PasswordReset = () => {
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="form-group1">
-              <label htmlFor="password">New Password:</label>
+            <label className='input-Box' htmlFor="password">New Password:</label>
               <div className="password-field">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -121,7 +121,7 @@ const PasswordReset = () => {
               </div>
             </div>
             <div className="form-group1">
-              <label htmlFor="confirmPassword">Confirm New Password:</label>
+            <label className='input-Box' htmlFor="confirmPassword">Confirm New Password:</label>
               <div className="password-field">
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
