@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState(localStorage.getItem('token'));
   const [user, setUser] = useState(null);
   const history = useHistory();
-  const backendURL = 'https://fdrs-backend.up.railway.app';
+  const backendURL = 'https://fdrs-backend.up.railway.app';  
   const logout = async () => {
     try {
       const refreshToken = localStorage.getItem('refreshToken');

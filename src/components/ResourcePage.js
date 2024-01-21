@@ -21,8 +21,7 @@ const ResourcePage = () => {
   const [resourceDetails, setResourceDetails] = useState(null);
   const [comments, setComments] = useState([]);
   const { authToken, isLoggedIn, user, isAdmin } = useContext(AuthContext);
-  const backendURL = 'https://fdrs-backend.up.railway.app';
-  const [isFavorited, setIsFavorited] = useState(document?.isFavorited);
+  const backendURL = 'https://fdrs-backend.up.railway.app';  const [isFavorited, setIsFavorited] = useState(document?.isFavorited);
   const history = useHistory();
 
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -30,14 +29,17 @@ const ResourcePage = () => {
   const [loading, setLoading] = useState(true);
   const shareUrl = window.location.href;
   const title = 'Check out this resource!';
+  const [errorMessage, setErrorMessage] = useState('');
+  const [actionSuccess, setActionSuccess] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [messageTimeout, setMessageTimeout] = useState(null);
 
-    
   useEffect(() => {
     setInProp(true);
   }, []);
   useEffect(() => {
-    if (authToken && resourceId) {
-      const fetchFavorites = async () => {
+    const fetchFavorites = async () => {
+      if (authToken && resourceId) {
         try {
           const response = await axios.get(`${backendURL}/api_user/profile`, {
             headers: { Authorization: `Bearer ${authToken}` },
@@ -47,11 +49,12 @@ const ResourcePage = () => {
         } catch (error) {
           console.error(`Error fetching favorites: ${error}`);
         }
-      };
-
-      fetchFavorites();
-    }
-  }, [authToken, resourceId]);
+      }
+    };
+  
+    fetchFavorites();
+  }, [authToken, resourceId, resourceDetails]); 
+  
 
   useEffect(() => {
     const fetchResourceDetails = async () => {
@@ -85,29 +88,53 @@ const ResourcePage = () => {
       <Header isLoading={loading} /> 
     </div>;
   }
-  const promptLogin = () => {
+  const setMessageWithTimer = (successMsg, errorMsg) => {
+    // Clear any existing timeout to avoid multiple timers running
+    if (messageTimeout) {
+      clearTimeout(messageTimeout);
+    }
+  
+    setActionSuccess(successMsg);
+    setActionError(errorMsg);
+  
+    // Set a new timeout to clear the messages
+    const newTimeout = setTimeout(() => {
+      setActionSuccess('');
+      setActionError('');
+    }, 3000);
+  
+    setMessageTimeout(newTimeout);
+  };
+  
+const resetMessages = () => {
+  setActionSuccess('');
+  setActionError('');
+};
+const toggleFavorite = async () => {
+  resetMessages();
+  if (!isLoggedIn) {
     setShowLoginPrompt(true);
-    setTimeout(() => setShowLoginPrompt(false), 4000); // Hide prompt after 4 seconds
-  };
-  const toggleFavorite = async () => {
-    if (!isLoggedIn) {
-      setShowLoginPrompt(true);
-      setTimeout(() => setShowLoginPrompt(false), 4000);
-      return;
-    }
+    setTimeout(() => setShowLoginPrompt(false), 4000);
+    return;
+  }
+  const action = isFavorited ? 'unfavorite' : 'favorite';
+  try {
+    const method = isFavorited ? 'delete' : 'post';
+    const response = await axios[method](`${backendURL}/api_favorite/resources/${resourceDetails._id}/${action}`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
 
-    const action = isFavorited ? 'unfavorite' : 'favorite';
-    try {
-      const method = isFavorited ? 'delete' : 'post';  // Use delete for unfavorite
-      const response = await axios[method](`${backendURL}/api_favorite/resources/${resourceId}/${action}`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
+    if (response.status === 200) {
       setIsFavorited(!isFavorited);
-    } catch (error) {
-      console.error(`Error toggling favorite status: ${error}`);
+      setMessageWithTimer(`Resource has been ${isFavorited ? 'removed from' : 'added to'} favorites.`, '');
+    } else {
+      setMessageWithTimer('', 'Failed to update favorite status.');
     }
-  };
-
+  } catch (error) {
+    console.error('Failed to toggle favorite status:', error);
+    setMessageWithTimer('', 'Failed to update favorite status.');
+  }
+};
 
   const handleFavButtonClick = () => {
     if (!isLoggedIn) {
@@ -117,6 +144,7 @@ const ResourcePage = () => {
     }
     toggleFavorite();
   };
+  
   const copyToClipboard = () => {
     const url = window.location.href; 
     navigator.clipboard.writeText(url).then(() => {
@@ -125,10 +153,12 @@ const ResourcePage = () => {
       console.error('Could not copy text: ', err);
     });
   };
-
+ 
   return (
     <CSSTransition in={inProp} timeout={300} classNames="fade" appear>
-      <div className="resource-container">
+   <div className="resource-container">
+   {actionSuccess && <div className="success-message">{actionSuccess}</div>}
+      {actionError && <div className="error-message">{actionError}</div>}
         <div className="resource-header">
           {resourceDetails.Cover && (
             <img 
@@ -145,6 +175,7 @@ const ResourcePage = () => {
           <p className="user-email">{resourceDetails.User.Email}</p>
 
         </div>
+        
         <div className="share-buttons">
         <FacebookShareButton url={shareUrl} quote={title}>
           <FacebookIcon size={32} round />
@@ -164,13 +195,14 @@ const ResourcePage = () => {
           >
             Download
           </a>
-          <button 
-            className={`favorite-button ${isFavorited ? '\u2605' : '\u2606'}`} 
-            onClick={handleFavButtonClick}
-          >
-            {isFavorited ? '★' : '☆'}
-            {showLoginPrompt && <span className="login-tooltip">Log in to add</span>}
-          </button>
+          <button className="favorite-button" onClick={handleFavButtonClick}>
+  {isFavorited ? '\u2605' : '\u2606'}
+</button>
+
+                {showLoginPrompt && (
+                  <div className="error-message">Please log in to add to favorites.</div>
+                )}
+
         </div>
 
         <Comments resourceId={resourceId} userId={user?._id} isLoggedIn={isLoggedIn} isAdmin={isAdmin} authToken={authToken} />

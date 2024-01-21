@@ -7,12 +7,11 @@ import { RouteParamsContext } from './context/RouteParamsContext';
 import { jwtDecode } from 'jwt-decode'; 
 import { CSSTransition } from 'react-transition-group';
 
-const FacultyPage = ({ searchTerm }) => {
+const FacultyPage = ({ searchResults }) => {
   const { setRouteParams } = useContext(RouteParamsContext);
   const location = useLocation();
   const facultyName = location.state?.facultyName || 'Faculty'; 
   const [resources, setResources] = useState([]);
-  const [filteredResources, setFilteredResources] = useState([]); // State for filtered resources
   const [userFavorites, setUserFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -47,27 +46,31 @@ const FacultyPage = ({ searchTerm }) => {
       document.body.style.overflow = '';
     };
   }, [backgroundImage]);
-
+  
   useEffect(() => {
     setRouteParams({ facultyId });
   }, [facultyId, setRouteParams]);
-
+  const fetchResources = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${backendURL}/api_resource/faculty/${facultyId}`);
+      setResources(response.data.resource_list);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching faculty resources:', err);
+      setError(err.response?.data?.error || 'An error occurred while fetching resources.');
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchResources = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${backendURL}/api_resource/faculty/${facultyId}`);
-        setResources(response.data.resource_list);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching faculty resources:', err);
-        setError(err.response?.data?.error || 'An error occurred while fetching resources.');
-        setLoading(false);
-      }
-    };
-
     fetchResources();
   }, [facultyId, backendURL]);
+  useEffect(() => {
+    // This effect checks if searchResults is empty and fetches resources if needed
+    if (!searchResults || searchResults.length === 0) {
+      fetchResources();
+    }
+  }, [searchResults]);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -87,21 +90,10 @@ const FacultyPage = ({ searchTerm }) => {
       fetchFavorites();
     }
   }, [authToken, backendURL]);
-
-  useEffect(() => {
-    const term = searchTerm ? searchTerm.toString().toLowerCase() : '';
-    const filtered = term
-      ? resources.filter(resource => resource.Title.toLowerCase().includes(term))
-      : resources;
-    setFilteredResources(filtered);
-  }, [searchTerm, resources]);
-
   const isResourceFavorited = resourceId => authToken && userFavorites.includes(resourceId);
-
   const handleCardClick = resourceId => {
     history.push(`/resource/${resourceId}`);
   };
-
   const toggleFavorite = async (resourceId) => {
     if (jwtDecode(authToken).exp < Date.now() / 1000) {
       await refreshTokenFunc();
@@ -123,6 +115,9 @@ const FacultyPage = ({ searchTerm }) => {
     }
   };
 
+  const showSearchResults = searchResults && searchResults.length > 0;
+  const displayResources = showSearchResults ? searchResults : resources;
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -130,15 +125,15 @@ const FacultyPage = ({ searchTerm }) => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-  
+
   return (
     <CSSTransition in={true} appear={true} timeout={300} classNames="fade">
       <div style={pageStyle} className="faculty-page">
-        <div className="faculty-container">
-          {filteredResources.length > 0 ? (
-            filteredResources.map((resource) => (
+        <div style={pageStyle} className="faculty-container">
+          {displayResources.length > 0 ? (
+            displayResources.map((resource) => (
               <DocumentCard
-                cardType="faculty"
+                cardType={showSearchResults ? "search" : "faculty"}
                 key={resource._id}
                 document={resource}
                 onClick={() => handleCardClick(resource._id)}
@@ -147,12 +142,16 @@ const FacultyPage = ({ searchTerm }) => {
               />
             ))
           ) : (
-            <p>No resources found for this faculty.</p>
+            <div className='no-resources'>
+            <p>No resources found {showSearchResults ? "for this search" : "for this faculty"}.</p>
+            </div>
           )}
         </div>
+        
       </div>
     </CSSTransition>
   );
 };
+
 
 export default FacultyPage;

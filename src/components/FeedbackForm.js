@@ -2,12 +2,14 @@ import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
+import { RouteParamsContext } from './context/RouteParamsContext';
 
-const FeedbackForm = ({ authToken, onSearchResults }) => {
+const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchPerformed, setSearchPerformed] = useState(false);
   const [showSearchPrompt, setShowSearchPrompt] = useState(false);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [showButton, setShowButton] = useState(true);
   const location = useLocation();
   const isFacultyPage = location.pathname.includes('/faculty/');
@@ -15,8 +17,29 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
   const authContext = useContext(AuthContext);
   const [feedbackSuccess, setFeedbackSuccess] = useState('');
   const [feedbackError, setFeedbackError] = useState('');
+  const { routeParams } = useContext(RouteParamsContext);
+  const facultyId = routeParams ? routeParams.facultyId : null;
   useEffect(() => {
-    if (searchPerformed && searchResults.length === 0) {
+    // Set a delay for debouncing
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (debouncedSearchTerm) {
+      handleSearch();
+    }
+  }, [debouncedSearchTerm]);
+
+
+  
+  useEffect(() => {
+    if (showFeedbackButton) {
       setShowSearchPrompt(true);
       setShowButton(true); 
       const timer = setTimeout(() => {
@@ -24,25 +47,22 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
       }, 4000);
       return () => clearTimeout(timer);
     }
-  }, [searchPerformed, searchResults]);
+  }, [showFeedbackButton]);
 
   const handleInputChange = (e) => {
-    setSearchTerm(e.target.value);
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
+
+    // If the search term is empty, send an empty string as the search query
+    if (newSearchTerm === '') {
+      onSearch('', facultyId);
+    }
   };
 
   const handleSearch = async () => {
-    setSearchPerformed(true); 
-    try {
-      const response = await axios.get(`${backendURL}/api_resource/search`, {
-        params: { term: searchTerm },
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-      setSearchResults(response.data);
-      onSearchResults(response.data); 
-    } catch (error) {
-      console.error('Search error:', error);
-    }
+    onSearch(debouncedSearchTerm,facultyId);
   };
+  
 
   const submitFeedback = async () => {
     const { user } = authContext;
@@ -65,8 +85,7 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
       setSearchTerm('');
       setFeedbackSuccess(response.data.message); // Set success message from response
     } catch (error) {
-      console.error('Feedback submission error:', error);
-      setFeedbackError(error.response?.data?.message || 'An error occurred while submitting feedback.');
+      setFeedbackError('You need to add more than 5 character.');
     }
   };
 
@@ -82,7 +101,6 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
             onChange={handleInputChange}
             style={{
               borderRadius: '10px 0 0 10px',
-              border: '1px solid #ccc',
               flexGrow: 1,
               fontSize: 'medium',
               fontWeight: '600',
@@ -105,23 +123,24 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
           >
             <svg height="17" viewBox="0 0 1792 1792" width="17" xmlns="http://www.w3.org/2000/svg"><path d="M1216 832q0-185-131.5-316.5t-316.5-131.5-316.5 131.5-131.5 316.5 131.5 316.5 316.5 131.5 316.5-131.5 131.5-316.5zm512 832q0 52-38 90t-90 38q-54 0-90-38l-343-342q-179 124-399 124-143 0-273.5-55.5t-225-150-150-225-55.5-273.5 55.5-273.5 150-225 225-150 273.5-55.5 273.5 55.5 225 150 150 225 55.5 273.5q0 220-124 399l343 343q37 37 37 90z" /></svg>
           </button>
-          {searchPerformed && searchResults.length === 0 && showButton && (
-            <button
-              className="authButton"
-              onClick={submitFeedback}
-              style={{
-                padding: '10px 20px',
-                margin: '5px',
-                borderRadius: '5px',
-                border: 'none',
-                cursor: 'pointer',
-                backgroundColor: 'green',
-                color: 'white'
-              }}
-            >
-              Submit Feedback
-            </button>
-          )}
+          {showFeedbackButton && (
+                <button
+                    className="authButtonA"
+                    onClick={submitFeedback}
+                    style={{
+                        padding: '10px 20px',
+                        margin: '5px',
+                        borderRadius: '5px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        backgroundColor: 'green',
+                        color: 'white'
+                    }}
+                >
+                    Submit Feedback
+                </button>
+            )}
+
         </div>
       )}
        {feedbackSuccess && (
@@ -140,13 +159,7 @@ const FeedbackForm = ({ authToken, onSearchResults }) => {
           <p>No results found. Would you like to submit your search as feedback?</p>
         </div>
       )}
-      {searchPerformed && searchResults.length > 0 && (
-        <div>
-          {searchResults.map((result) => (
-            <div key={result.id}>{result.title}</div>
-          ))}
-        </div>
-      )}
+      
     </div>
   );
 };

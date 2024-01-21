@@ -1,4 +1,3 @@
-/* Header Gradient Animation */
 @keyframes gradientBG {
   0% {
     background-position: 0% 50%;
@@ -20,8 +19,6 @@
   top: 0;
   padding: 10px;
   color: white;
-  /* choose the color that fits your design */
-  /* other styles as needed */
 }
 
 .headerContainer {
@@ -74,14 +71,12 @@
   }
 }
 
-/* Apply this only when the 'loading' class is added to the header */
 .headerContainer.loading {
   background: linear-gradient(to right, rgb(154, 233, 245) 30%, #0278a0 50%);
   background-size: 200% 100%;
   animation: loadingAnimation 2s ease-in-out infinite;
 }
 
-/* Responsive Design Improvements */
 @media screen and (max-width: 768px) {
   .headerContainer {
     flex-direction: column;
@@ -107,12 +102,10 @@
   }
 }
 
-/* Styles for the left part of the header */
 .headerContainer .left {
   display: flex;
 }
 
-/* Logo Styles with hover effect */
 .logoContainer .logo {
   width: 70px;
   display: flex;
@@ -132,6 +125,17 @@
   margin-right: 50px;
 }
 
+
+@media (max-width: 768px) {
+  .authButtons .logoReg {
+    position: absolute;
+    top: 10px; /* Adjust the top value as needed */
+    right: 10px; /* Adjust the right value as needed */
+    margin-right: 20px; /* Reset margin-right for smaller screens */
+  }
+}
+
+
 .authButtons {
   background: transparent;
 }
@@ -150,7 +154,8 @@
   }
 }
 
-/* Auth Buttons Styles with hover effects */
+
+
 .authButton,
 .authButtonL,
 .sidebarToggle {
@@ -159,11 +164,10 @@
   cursor: pointer;
   align-items: center;
   height: 35px;
-  font-size: medium;
   display: inline-block;
   position: relative;
   transition: all 0.3s ease;
-  background-color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.7);
   border: 1px solid white;
   margin-right: 5px;
 }
@@ -171,21 +175,21 @@
 @media screen and (max-width: 600px) {
   .authButtonL {
     z-index: 1;
+    margin-right: 0;
   }
 }
 
 .authButton:hover,
 .authButtonL:hover,
 .sidebarToggle:hover {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.507);
-  background: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 10px 20px rgba(116, 116, 116, 0.507);
+  background: rgba(95, 95, 95, 0.8);
 }
 
 .action-buttons .authButton:hover {
   background: rgba(0, 0, 0, 0.8);
 }
 
-/* Input Bar Styles with focus effect */
 .inputBarH {
   border-radius: 5px;
   background-color: #6a0000;
@@ -209,7 +213,6 @@
   outline: none;
 }
 
-/* Sidebar Styles */
 .sidebar {
   position: fixed;
   margin-top: 70px;
@@ -243,7 +246,7 @@
 
 .upload-modal-content {
   width: 400px;
-  background-color: rgba(255, 255, 255, 0.13);
+  background-color: rgba(0, 0, 0, 0.5);
   position: absolute;
   transform: translate(-50%, -50%);
   top: 50%;
@@ -254,6 +257,7 @@
   box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
   padding: 50px 35px;
 }
+
 
 @media (max-width: 768px) {
   .upload-modal-content {
@@ -298,7 +302,7 @@
 .upload-modal-content input {
   display: block;
   height: 30px;
-  width: 100%;
+  width: 94%;
   background-color: rgba(255, 255, 255, 0.07);
   border-radius: 3px;
   padding: 0 10px;
@@ -322,6 +326,22 @@
   cursor: pointer;
 }
 
+.upload-modal-content .modal-close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 999;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  font-size: 24px;
+  color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0);
+  transition: all 0.3s ease;
+}
+
 
 .success-message {
   padding: 10px;
@@ -332,6 +352,7 @@
   text-align: center;
   font-size: 16px;
   font-weight: bold;
+
 }
 
 .error-message {
@@ -350,7 +371,7 @@
   position: absolute;
   background-color: #6a0000;
   margin-top: 2px;
-  z-index: 1000;
+  z-index: 999;
 }
 
 @media (max-width: 768px) {
@@ -360,23 +381,56 @@
     background-color: #6a0000;
     margin-top: 2px;
     padding: 2px;
-    z-index: 600;
+    z-index: 2;
   }
 }
 
 .action-buttons h1 {
-  font-size: x-large;
   position: fixed;
-  left: 0%;
-  width: 100%;
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%; /* Assuming you want the title to span the full width of the screen */
+  padding: 10px 0; /* Add some padding to ensure the text doesn't touch the edges */
+  box-sizing: border-box; /* Include padding in the width calculation */
+}
+
+/* Responsive font sizes based on screen width */
+@media (max-width: 1200px) {
+  .action-buttons h1 {
+    font-size: large; /* Smaller font size for smaller screens */
+    top: 21%;
+  }
+}
+
+@media (max-width: 992px) {
+  .action-buttons h1 {
+    font-size: medium; /* Even smaller font size for tablets */
+    top: 9%;
+
+  }
 }
 
 @media (max-width: 768px) {
   .action-buttons h1 {
-    padding-top: 30px;
+    font-size: small; /* Small font size for landscape phones */
+    top: 14%;
+
   }
 }
 
+@media (max-width: 576px) {
+  .action-buttons h1 {
+    font-size: x-small; /* Extra small font size for portrait phones */
+    top: 15%;
+
+  }
+}
 .input-icon-container {
   position: relative;
   display: flex;
@@ -386,12 +440,12 @@
 
 .inputBarH {
   width: 100%;
-  padding-right: 30px; /* Adjust the padding to ensure text doesn't go under the icon */
+  padding-right: 30px;
 }
 
 .icon {
   position: absolute;
-  right: 10px; /* Adjust this value as needed */
+  right: 10px;
   cursor: pointer;
   margin-top: 10px;
 }
@@ -402,18 +456,109 @@
 }
 
 .password-input-container .Input {
-  width: 100%; /* Take full width of the container */
+  width: 100%;
 }
 
 .password-input-container .icon {
   position: absolute;
+<<<<<<< HEAD
   right: -1px; /* Align to the right inside the container */
+=======
+  right: -15px;
+>>>>>>> 80c40665c9b3179ede7040a6326dca46499a4f03
   top: 0;
   margin-top: 15px;
-  height: 100%; /* Match the height of the input */
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px; /* Width of the icon container */
+  width: 40px;
   cursor: pointer;
 }
+
+
+.loading-message {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid blue;
+  width: 36px;
+  height: 36px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.feedbackSuccess {
+  background: green;
+  height: 35px;
+  border-radius: 10px;
+  font-size: medium;
+  margin-top: 70px;
+  color: #fff;
+  padding: 10px;
+  margin-bottom: 15px;
+  text-align: center;
+  position: absolute;
+  top: 0;
+  z-index: 5;
+}
+
+@media screen and (max-width: 600px) {
+  .feedbackSuccess {
+    left: 100px ;
+    margin-top: 100px;
+  }
+}
+
+.feedbackError {
+  position: absolute;
+  background: #6a0000;
+  height: 35px;
+  width: 250px;
+  border-radius: 10px;
+  font-size: larger;
+  z-index: 5;
+}
+
+.modal-header {
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  /* Add more styles as needed */
+}
+
+.upload-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent backdrop */
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+
+
