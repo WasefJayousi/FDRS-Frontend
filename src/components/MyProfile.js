@@ -30,6 +30,8 @@ const MyProfile = () => {
   const isProfilePage = location.pathname.includes(`/my-profile`);
   const backgroundImage = `/img_avatar.png`;
   const { activeSection } = useContext(ActiveSectionContext);
+  const [authorizationSuccess, setAuthorizationSuccess] = useState('');
+  const [unauthorizationSuccess, setUnauthorizationSuccess] = useState('');
 
 
 
@@ -221,12 +223,11 @@ const MyProfile = () => {
 
   const authorizeResource = async (resourceId) => {
     try {
-      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`,
-        { accept: true },
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      );
+      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`, { accept: true }, { headers: { Authorization: `Bearer ${authToken}` } });
       if (response.status === 200) {
         setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
+        setAuthorizationSuccess('Resource successfully authorized.'); // Set success message
+        setTimeout(() => setAuthorizationSuccess(''), 5000); // Clear success message after 5 seconds
       }
     } catch (error) {
       console.error('Error authorizing the resource:', error);
@@ -235,17 +236,17 @@ const MyProfile = () => {
 
   const unauthorizeResource = async (resourceId) => {
     try {
-      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`,
-        { accept: false },
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      );
+      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`, { accept: false }, { headers: { Authorization: `Bearer ${authToken}` } });
       if (response.status === 200) {
         setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
+        setUnauthorizationSuccess('Resource successfully unauthorized.'); // Set success message
+        setTimeout(() => setUnauthorizationSuccess(''), 5000); // Clear success message after 5 seconds
       }
     } catch (error) {
       console.error('Error unauthorizing the resource:', error);
     }
   };
+
 
   const handleCardClick = (resourceId) => {
     history.push(`/resource/${resourceId}`);
@@ -292,6 +293,8 @@ const MyProfile = () => {
   return (
     <div className="profile-container">
       <div className="profile-content">
+      {authorizationSuccess && <div className="success-message">{authorizationSuccess}</div>}
+        {unauthorizationSuccess && <div className="success-message">{unauthorizationSuccess}</div>}
 
         {showSuccessMessage && (
           <div className="success-message-header">{successMessage}</div>

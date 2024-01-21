@@ -201,9 +201,9 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
       setSignupValidationErrors({});
       setSignupSuccessMessage('Registration successful!');
       setTimeout(() => {
+        setSignupSuccessMessage('');
         setIsSignupOpen(false);
       }, 1000);
-      setSignupSuccessMessage('');
      } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         const backendErrors = error.response.data.errors.map(err => err.msg).join(", ");
@@ -254,6 +254,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
         setLoginValidationErrors({});
         setLoginSuccessMessage('Login Successful');
         setTimeout(() => {
+          setLoginSuccessMessage(''); 
           setIsLoginModalOpen(false);
         }, 1000);
 
@@ -307,8 +308,8 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
         setForgotPasswordData({ email: '' });
         setForgotPasswordErrorMessage('');
         setForgotPasswordSuccessMessage('Password reset email sent!');
-        setForgotPasswordSuccessMessage('');
         setTimeout(() => {
+          setForgotPasswordSuccessMessage('');
           setIsForgotPasswordOpen(false);
         }, 1000);
 
@@ -417,7 +418,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
         <FileUpload facultyId={facultyId} setIsModalOpen={setIsFileUploadOpen} />
       )}
 
-      <Modal isOpen={isSignupOpen} onClose={closeSignupModal}>
+<Modal isOpen={isSignupOpen} onClose={() => setIsSignupOpen(false)}>
         <label htmlFor="username"><h1>SignUp</h1></label>
 
         {successMessage && (

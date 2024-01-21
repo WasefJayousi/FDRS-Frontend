@@ -17,6 +17,7 @@ const PasswordReset = () => {
   const history = useHistory();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState(''); // Add state for password error message
 
   const url = `${backendURL}/api_auth/post_reset-password/${userId}/${token}`;
   const backgroundImage = `/WelcomingPage.png`;
@@ -65,17 +66,23 @@ const PasswordReset = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setMessage("Passwords don't match");
+    setPasswordError(''); // Clear any existing error messages
+    setMessage(''); // Clear any existing messages
+
+    if (password.length < 8) {
+      setPasswordError('Password must be at least 8 characters long.');
       return;
     }
-  
+
+    if (password !== confirmPassword) {
+      setPasswordError("Passwords don't match.");
+      return;
+    }
+
     try {
-      const response = await axios.post(url, {
-        password,
-      });
+      const response = await axios.post(url, { password });
       setMessage(response.data.message);
-      history.push('/WelcomingPage'); // Redirect to welcoming page after successful password reset
+      history.push('/WelcomingPage'); // Redirect after successful reset
     } catch (error) {
       if (error.response) {
         setMessage(error.response.data.message || 'Failed to reset password. Please try again later.');
@@ -90,7 +97,6 @@ const PasswordReset = () => {
     setShowPassword(!showPassword);
   };
 
-  // Function to toggle confirm password visibility
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
@@ -99,6 +105,7 @@ const PasswordReset = () => {
     <div className="upload-modal-content">
 
         <h1>Reset Your Password</h1>
+        {passwordError && <div className="error-message">{passwordError}</div>}
         {message && <div className="message">{message}</div>}
         {!isTokenValid ? (
           <p>Token is invalid or expired. Please request a new password reset.</p>

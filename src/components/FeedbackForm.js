@@ -35,16 +35,24 @@ const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
       handleSearch();
     }
   }, [debouncedSearchTerm]);
-
-
   
   useEffect(() => {
-    if (showFeedbackButton) {
-      setShowSearchPrompt(true);
-      setShowButton(true); 
+    if (feedbackSuccess || feedbackError) {
       const timer = setTimeout(() => {
-        setShowSearchPrompt(false);
-      }, 4000);
+        setFeedbackSuccess('');
+        setFeedbackError('');
+      }, 6000); 
+
+      return () => clearTimeout(timer);
+    }
+  }, [feedbackSuccess, feedbackError]);
+
+  useEffect(() => {
+    if (showFeedbackButton) {
+      const timer = setTimeout(() => {
+        setShowButton(false);
+      }, 6000); 
+
       return () => clearTimeout(timer);
     }
   }, [showFeedbackButton]);
@@ -53,7 +61,6 @@ const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
     const newSearchTerm = e.target.value;
     setSearchTerm(newSearchTerm);
 
-    // If the search term is empty, send an empty string as the search query
     if (newSearchTerm === '') {
       onSearch('', facultyId);
     }
@@ -71,7 +78,16 @@ const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
       setFeedbackError('User is not logged in.');
       return;
     }
-
+  
+    // Check if the search term is not empty and has at least 5 characters
+    if (searchTerm.trim().length < 5) {
+      setFeedbackError('You need to add more than 5 characters.');
+      setTimeout(() => {
+        setFeedbackError('');
+      }, 6000); // Clear error message after 6 seconds
+      return;
+    }
+  
     try {
       const response = await axios.post(`${backendURL}/api_feedback/feedback-post`, {
         User: user._id,
@@ -82,12 +98,30 @@ const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
           'Authorization': `Bearer ${authToken}`,
         },
       });
-      setSearchTerm('');
-      setFeedbackSuccess(response.data.message); // Set success message from response
+      
+      if (response.status === 200) {
+        setSearchTerm(''); // Clear the search input
+        setFeedbackSuccess('Feedback submitted successfully!'); // Set success message
+  
+        setTimeout(() => {
+          setFeedbackSuccess(''); // Clear success message after 6 seconds
+        }, 6000);
+      } else {
+        // Handle any status codes that aren't success
+        setFeedbackError('Failed to submit feedback. Please try again.');
+        setTimeout(() => {
+          setFeedbackError('');
+        }, 6000); // Clear error message after 6 seconds
+      }
     } catch (error) {
-      setFeedbackError('You need to add more than 5 character.');
+      console.error('Error submitting feedback:', error);
+      setFeedbackError('An error occurred while submitting feedback.');
+      setTimeout(() => {
+        setFeedbackError('');
+      }, 6000); // Clear error message after 6 seconds
     }
   };
+  
 
   return (
     <div className='search'>
@@ -143,7 +177,7 @@ const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
 
         </div>
       )}
-       {feedbackSuccess && (
+        {feedbackSuccess && (
         <div className='feedbackSuccess'>
           {feedbackSuccess}
         </div>

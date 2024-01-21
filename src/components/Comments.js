@@ -116,7 +116,16 @@ const Comments = ({ resourceId }) => {
       console.error('Error updating comment:', error);
     }
   };
-
+  const canEditComment = (comment) => {
+    // User can edit if they are logged in and are the author of the comment
+    const commentOwnerId = comment.User._id || comment.User;
+    return isLoggedIn && user && user._id === commentOwnerId;
+  };
+  const canDeleteComment = (comment) => {
+    // Admins can delete any comment. Users can delete their own comments.
+    const commentOwnerId = comment.User._id || comment.User;
+    return isLoggedIn && (isAdmin || (user && user._id === commentOwnerId));
+  };
   const canEditOrDeleteComment = (comment) => {
     const commentOwnerId = comment.User._id || comment.User; 
     return isLoggedIn && (isAdmin || (user && user._id === commentOwnerId));  };
@@ -153,18 +162,21 @@ const Comments = ({ resourceId }) => {
               <h2>{comment.Comment}</h2> 
             )}
           </div>
-          {canEditOrDeleteComment(comment) && (
-            <div className="comment-actions">
-              {editing.id === comment._id ? (
-                <button className="authButton" onClick={() => saveUpdatedComment(comment._id)}>Save</button>
-              ) : (
-                <button className="authButton" onClick={() => setEditing({ id: comment._id, text: comment.Comment })}>
-                  Edit
-                </button>
-              )}
-              <button className="authButton" onClick={() => deleteComment(comment._id)}>Delete</button>
-            </div>
-          )}
+          {canEditComment(comment) && (
+      <div className="comment-actions">
+        {editing.id === comment._id ? (
+          <button className="authButton" onClick={() => saveUpdatedComment(comment._id)}>Save</button>
+        ) : (
+          <button className="authButton" onClick={() => setEditing({ id: comment._id, text: comment.Comment })}>
+            Edit
+          </button>
+        )}
+      </div>
+    )}
+    {canDeleteComment(comment) && (
+      <button className="authButton" onClick={() => deleteComment(comment._id)}>Delete</button>
+    )}
+  
         </div>
       ))}
     </div>
