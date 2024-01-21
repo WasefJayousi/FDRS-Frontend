@@ -79,12 +79,9 @@ const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
       return;
     }
   
-    // Check if the search term is not empty and has at least 5 characters
     if (searchTerm.trim().length < 5) {
       setFeedbackError('You need to add more than 5 characters.');
-      setTimeout(() => {
-        setFeedbackError('');
-      }, 6000); // Clear error message after 6 seconds
+      setTimeout(() => setFeedbackError(''), 6000);
       return;
     }
   
@@ -98,29 +95,23 @@ const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
           'Authorization': `Bearer ${authToken}`,
         },
       });
-      
-      if (response.status === 200) {
-        setSearchTerm(''); // Clear the search input
-        setFeedbackSuccess('Feedback submitted successfully!'); // Set success message
   
-        setTimeout(() => {
-          setFeedbackSuccess(''); // Clear success message after 6 seconds
-        }, 6000);
+      if (response.status === 200 || response.status === 201) { // Check for both 200 and 201 status codes
+        setSearchTerm('');
+        setFeedbackSuccess('Feedback submitted successfully!');
+        setTimeout(() => setFeedbackSuccess(''), 6000);
       } else {
-        // Handle any status codes that aren't success
+        // Handle any other status codes as errors
         setFeedbackError('Failed to submit feedback. Please try again.');
-        setTimeout(() => {
-          setFeedbackError('');
-        }, 6000); // Clear error message after 6 seconds
+        setTimeout(() => setFeedbackError(''), 6000);
       }
     } catch (error) {
       console.error('Error submitting feedback:', error);
       setFeedbackError('An error occurred while submitting feedback.');
-      setTimeout(() => {
-        setFeedbackError('');
-      }, 6000); // Clear error message after 6 seconds
+      setTimeout(() => setFeedbackError(''), 6000);
     }
   };
+  
   
 
   return (

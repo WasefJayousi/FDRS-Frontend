@@ -221,27 +221,36 @@ const MyProfile = () => {
   };
 
 
+  const handleServerResponse = (response, successMessage) => {
+    if (response.status === 200) {
+      setAuthorizationSuccess(successMessage);
+      setTimeout(() => setAuthorizationSuccess(''), 5000);
+    } else {
+      console.error('Server responded with status:', response.status);
+    }
+  };
+  
   const authorizeResource = async (resourceId) => {
     try {
-      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`, { accept: true }, { headers: { Authorization: `Bearer ${authToken}` } });
-      if (response.status === 200) {
-        setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
-        setAuthorizationSuccess('Resource successfully authorized.'); // Set success message
-        setTimeout(() => setAuthorizationSuccess(''), 5000); // Clear success message after 5 seconds
-      }
+      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`, 
+        { accept: true },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      );
+      handleServerResponse(response, 'Resource successfully authorized.');
+      setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
     } catch (error) {
       console.error('Error authorizing the resource:', error);
     }
   };
-
+  
   const unauthorizeResource = async (resourceId) => {
     try {
-      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`, { accept: false }, { headers: { Authorization: `Bearer ${authToken}` } });
-      if (response.status === 200) {
-        setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
-        setUnauthorizationSuccess('Resource successfully unauthorized.'); // Set success message
-        setTimeout(() => setUnauthorizationSuccess(''), 5000); // Clear success message after 5 seconds
-      }
+      const response = await axios.post(`${backendURL}/api_user/admin/acceptance/${resourceId}`, 
+        { accept: false },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      );
+      handleServerResponse(response, 'Resource successfully unauthorized.');
+      setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
     } catch (error) {
       console.error('Error unauthorizing the resource:', error);
     }
