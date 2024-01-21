@@ -18,7 +18,15 @@ const PasswordReset = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(''); // Add state for password error message
-
+  const [passwordStrength, setPasswordStrength] = useState('');
+  const [passwordCriteria, setPasswordCriteria] = useState('');
+  const passwordStrengthColors = {
+    0: "transparent", // No strength
+    1: "red",         // Weak
+    2: "orange",      // Fair
+    3: "yellowgreen", // Good
+    4: "green"        // Strong
+  };
   const url = `${backendURL}/api_auth/post_reset-password/${userId}/${token}`;
   const backgroundImage = `/WelcomingPage.png`;
   useEffect(() => {
@@ -63,7 +71,39 @@ const PasswordReset = () => {
       }
     }
   }, [location]);
+  const evaluatePasswordStrength = (password) => {
+    let strength = 0;
+    const criteria = {
+      length: false,
+      lowercase: false,
+      specialChar: false,
+    };
+  
+    if (password.length >= 8) {
+      strength++;
+      criteria.length = true;
+    }
+    if (/[a-z]/.test(password)) {
+      strength++;
+      criteria.lowercase = true;
+    }
+    if (/[!@#$%^&*]/.test(password)) {
+      strength++;
+      criteria.specialChar = true;
+    }
+  
+    return { strength, criteria };
+  };
+  
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
 
+    // Evaluate password strength
+    const strengthEvaluation = evaluatePasswordStrength(newPassword);
+    setPasswordStrength(strengthEvaluation.strength);
+    setPasswordCriteria(strengthEvaluation.criteria);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setPasswordError(''); // Clear any existing error messages
@@ -108,25 +148,35 @@ const PasswordReset = () => {
         {passwordError && <div className="error-message">{passwordError}</div>}
         {message && <div className="message">{message}</div>}
         {!isTokenValid ? (
-          <p>Token is invalid or expired. Please request a new password reset.</p>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <div className="form-group1">
+        <p>Token is invalid or expired. Please request a new password reset.</p>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          {/* New Password Input */}
+          <div className="form-group1">
             <label className='input-Box' htmlFor="password">New Password:</label>
-              <div className="password-field">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="New Password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <span onClick={togglePasswordVisibility}>
-                  {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-                </span>
-              </div>
+            <div className="password-field">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="New Password"
+                name="password" // Corrected to use name attribute for password
+                id="password"
+                value={password}
+                onChange={handlePasswordChange} // Updated to use handlePasswordChange
+                required
+              />
+              <span onClick={togglePasswordVisibility}>
+                {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+              </span>
             </div>
+            <div className="password-strength-bar" style={{ backgroundColor: passwordStrengthColors[passwordStrength] }}>
+              <div className="password-strength" style={{ width: `${passwordStrength * 25}%` }}></div>
+            </div>
+            <ul className="password-criteria">
+              <li className={passwordCriteria.length ? 'met' : ''}>At least 8 characters</li>
+              <li className={passwordCriteria.lowercase ? 'met' : ''}>1 lowercase character</li>
+              <li className={passwordCriteria.specialChar ? 'met' : ''}>1 special character</li>
+            </ul>
+          </div>
             <div className="form-group1">
             <label className='input-Box' htmlFor="confirmPassword">Confirm New Password:</label>
               <div className="password-field">

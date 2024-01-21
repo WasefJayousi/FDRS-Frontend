@@ -556,5 +556,70 @@
   z-index: 1000; /* Ensure it's above other content */
 }
 
+.password-strength-indicator {
+  height: 5px;
+  width: 100%;
+  background-color: #ddd;
+  margin-bottom: 10px;
+}
 
+.password-strength-bar {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.strength-1 .password-strength-bar { width: 33%; background-color: red; }
+.strength-2 .password-strength-bar { width: 66%; background-color: yellow; }
+.strength-3 .password-strength-bar { width: 100%; background-color: green; }
+
+.password-criteria li {
+  color: #888;
+}
+
+.password-criteria li.met {
+  color: green;
+}
+
+
+.password-group {
+  position: relative;
+}
+
+.icon {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+}
+
+.password-strength-bar {
+  height: 5px;
+  width: 100%;
+  background-color: #ddd;
+  margin-top: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.password-strength {
+  height: 100%;
+  background-color: green;
+  transition: width 0.3s ease;
+  width: 0%; /* Default to no strength */
+}
+
+.password-criteria {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.password-criteria li {
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.password-criteria li.met {
+  color: #4BB543; /* or any color you prefer for met criteria */
+}
 

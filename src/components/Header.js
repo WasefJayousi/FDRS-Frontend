@@ -69,7 +69,15 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
   const [loginSuccessMessage, setLoginSuccessMessage] = useState('');
   const [signupSuccessMessage, setSignupSuccessMessage] = useState('');
   const [forgotPasswordSuccessMessage, setForgotPasswordSuccessMessage] = useState('');
-
+  const [passwordStrength, setPasswordStrength] = useState('');
+  const [passwordCriteria, setPasswordCriteria] = useState('');
+  const passwordStrengthColors = {
+    0: "transparent", // No strength
+    1: "red",         // Weak
+    2: "orange",      // Fair
+    3: "yellowgreen", // Good
+    4: "green"        // Strong
+  };
   const isValidEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return emailRegex.test(email);
@@ -335,12 +343,44 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
   const toggleSidebar = () => {
     setIsSidebarOpen(prev => !prev);
   };
+  const evaluatePasswordStrength = (password) => {
+    let strength = 0;
+    const criteria = {
+      length: false,
+      lowercase: false,
+      specialChar: false,
+    };
+  
+    if (password.length >= 8) {
+      strength++;
+      criteria.length = true;
+    }
+    if (/[a-z]/.test(password)) {
+      strength++;
+      criteria.lowercase = true;
+    }
+    if (/[!@#$%^&*]/.test(password)) {
+      strength++;
+      criteria.specialChar = true;
+    }
+  
+    return { strength, criteria };
+  };
+  
   const handleSignupInputChange = (e) => {
     const { name, value } = e.target;
     setSignupData({
       ...signupData,
       [name]: value,
     });
+  
+    if (name === 'password') {
+      const passwordStrength = evaluatePasswordStrength(value);
+      // Assuming you add a setPasswordStrength state hook
+      setPasswordStrength(passwordStrength.strength);
+      // Assuming you add a setPasswordCriteria state hook
+      setPasswordCriteria(passwordStrength.criteria);
+    }
   };
   const closeForgotPasswordModal = () => {
     setIsForgotPasswordOpen(false);
@@ -438,23 +478,31 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
     <Input type="email" id="email" name="email" value={signupData.email} onChange={handleSignupInputChange} placeholder="Email" />
     {signupSuccessMessage && <div className="success-message">{signupSuccessMessage}</div>}
 
-    <div className="password-input-container">
-        <Input
-            type={showSignupPassword ? "text" : "password"}
-            id="password"
-            name="password"
-            value={signupData.password}
-            onChange={handleSignupInputChange}
-            placeholder="Password"
-        />
-        <div
-            className="icon"
-            onClick={() => setShowSignupPassword(!showSignupPassword)}
-        >
-            {showSignupPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-        </div>
-    </div>
-
+    <div className="form-group password-group">
+  <Input
+    type={showSignupPassword ? "text" : "password"}
+    id="password"
+    name="password"
+    value={signupData.password}
+    onChange={handleSignupInputChange}
+    placeholder="Password"
+  />
+  <div
+    className="icon"
+    onClick={() => setShowSignupPassword(!showSignupPassword)}
+  >
+    {showSignupPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+  </div>
+  <div className="password-strength-bar" style={{ backgroundColor: passwordStrengthColors[passwordStrength] }}>
+    <div className="password-strength" style={{ width: `${passwordStrength * 25}%` }}></div>
+  </div>
+</div>
+<ul className="password-criteria">
+  <li className={passwordCriteria.length ? 'met' : ''}>At least 8 characters</li>
+  <li className={passwordCriteria.lowercase ? 'met' : ''}>1 lowercase character</li>
+  <li className={passwordCriteria.specialChar ? 'met' : ''}>1 special character</li>
+</ul>
+  
     <Input type="password" id="confirm-password" name="confirm-password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} placeholder="Confirm Password" />
     <button type="submit" className="authButton">Submit</button>
 </form>
