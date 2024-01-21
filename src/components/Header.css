@@ -461,11 +461,7 @@
 
 .password-input-container .icon {
   position: absolute;
-<<<<<<< HEAD
   right: -1px; /* Align to the right inside the container */
-=======
-  right: -15px;
->>>>>>> 80c40665c9b3179ede7040a6326dca46499a4f03
   top: 0;
   margin-top: 15px;
   height: 100%;
