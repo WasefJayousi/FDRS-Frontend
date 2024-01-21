@@ -22,7 +22,7 @@ const MyProfile = () => {
   const [userFavorites, setUserFavorites] = useState([]);
   const [userResources, setUserResources] = useState([]);
   const [feedbacks, setFeedbacks] = useState([]);
-  const location = useLocation(); // This hook gets the current location object
+  const location = useLocation(); 
   const [validationErrors, setValidationErrors] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState('');
   const [updateError, setUpdateError] = useState('');
@@ -46,14 +46,12 @@ const MyProfile = () => {
       backgroundImage: document.body.style.backgroundImage
     };
 
-    // Apply styles
     document.body.style.backgroundImage = `url(${backgroundImage})`;
     document.body.style.backgroundSize = 'cover';
     document.body.style.backgroundRepeat = 'no-repeat';
     document.body.style.backgroundPosition = 'center center';
     document.body.style.backgroundAttachment = 'fixed';
 
-    // Cleanup function to revert styles
     return () => {
       document.body.style.overflow = originalStyle.overflow;
       document.body.style.backgroundImage = originalStyle.backgroundImage;
@@ -61,20 +59,27 @@ const MyProfile = () => {
   }, [backgroundImage]);
   useEffect(() => {
     const fetchFeedbacks = async () => {
-      if (isProfilePage) {
-        try {
-          const response = await axios.get(`${backendURL}/api_feedback/feedbacks`, {
-            headers: { Authorization: `Bearer ${authToken}` },
-          });
-          setFeedbacks(response.data.feedbacks);
-        } catch (error) {
+      if (!isAdmin) {
+        return;
+      }
+      try {
+        const response = await axios.get(`${backendURL}/api_feedback/feedbacks`, {
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
+        setFeedbacks(response.data.feedbacks);
+      } catch (error) {
+        if (error.response?.status === 404) {
+          setFeedbacks([]);
+        } else {
           console.error('Error fetching feedbacks:', error);
         }
       }
     };
-
+  
     fetchFeedbacks();
-  }, [authToken, isProfilePage, backendURL]);
+  }, [authToken, isAdmin, backendURL]);
+  
+  
 
   const fetchProfileData = async () => {
     try {

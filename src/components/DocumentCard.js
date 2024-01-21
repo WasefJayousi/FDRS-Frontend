@@ -86,18 +86,34 @@ const DocumentCard = ({ cardType, document, onClick, deleteFeedback, sendEmail, 
       setTimeout(() => setShowLoginPrompt(false), 4000);
       return;
     }
+  
+    if (!document || !document._id) {
+      console.error('Document ID is undefined.');
+      setMessageWithTimer('', 'Failed to update favorite status. Document ID is missing.');
+      return;
+    }
+  
     const action = isFavorited ? 'unfavorite' : 'favorite';
+    const method = isFavorited ? 'delete' : 'post';
+  
     try {
-      const method = isFavorited ? 'delete' : 'post';
-      await axios[method](`${backendURL}/api_favorite/resources/${document._id}/${action}`, {
+      const response = await axios[method](`${backendURL}/api_favorite/resources/${document._id}/${action}`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
-      setMessageWithTimer(`Resource has been ${isFavorited ? 'removed from' : 'added to'} favorites.`, '');
-      setIsFavorited(!isFavorited);
+  
+      if (response.status === 200 || response.status === 201) {
+        setMessageWithTimer(`Resource has been ${isFavorited ? 'removed from' : 'added to'} favorites.`, '');
+        setIsFavorited(!isFavorited);
+      } else {
+        throw new Error('Unexpected response status: ' + response.status);
+      }
     } catch (error) {
+      console.error('Failed to toggle favorite status:', error);
       setMessageWithTimer('', 'Failed to update favorite status.');
     }
   };
+  
+  
 
   const authorizeResource = async (resourceId) => {
     try {

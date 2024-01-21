@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, useHistory } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode'; // Corrected import statement
+import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import './App.css';
 
 const PasswordReset = () => {
@@ -15,8 +16,10 @@ const PasswordReset = () => {
   const location = useLocation();
   const history = useHistory();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const url = `${backendURL}/api_auth/post_reset-password/${userId}/${token}`;
-  const backgroundImage = `/my-profile.png`;
+  const backgroundImage = `/WelcomingPage.png`;
   useEffect(() => {
     const originalStyle = {
       overflow: document.body.style.overflow,
@@ -84,51 +87,62 @@ const PasswordReset = () => {
     }
   };
   const togglePasswordVisibility = () => {
-    setShowPassword(true);
-  
-    setTimeout(() => {
-      setShowPassword(false);
-    }, 5000); 
+    setShowPassword(!showPassword);
+  };
+
+  // Function to toggle confirm password visibility
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
   
   return (
-    <div className="upload-modal-content">
-      <h1>Reset Your Password</h1>
-      {message && <div className="message">{message}</div>}
-      {!isTokenValid ? (
-        <p>Token is invalid or expired. Please request a new password reset.</p>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <div className="form-group1">
-            <label className='input-Box' htmlFor="password">New Password:</label>
-            <input
-          type={showPassword ? "text" : "password"}
-          placeholder='New Password:'
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button onClick={togglePasswordVisibility} className="password-toggle">
-          {showPassword ? 'Hide' : 'Show'}
-        </button>
-          </div>
-          <div className="form-group1">
-            <label className='input-Box' htmlFor="confirmPassword">Confirm New Password:</label>
-            <input
-              type="password"
-              placeholder='Confirm New Password:'
-              id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="authButton">Reset Password</button>
-        </form>
-      )}
-    </div>
-  );
-};
+    
+      <div className="password-reset-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
+        <h1>Reset Your Password</h1>
+        {message && <div className="message">{message}</div>}
+        {!isTokenValid ? (
+          <p>Token is invalid or expired. Please request a new password reset.</p>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="form-group1">
+              <label htmlFor="password">New Password:</label>
+              <div className="password-field">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="New Password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <span onClick={togglePasswordVisibility}>
+                  {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                </span>
+              </div>
+            </div>
+            <div className="form-group1">
+              <label htmlFor="confirmPassword">Confirm New Password:</label>
+              <div className="password-field">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Confirm New Password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+                <span onClick={toggleConfirmPasswordVisibility}>
+                  {showConfirmPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                </span>
+              </div>
+            </div>
+            <button type="submit" className="authButton">Reset Password</button>
+          </form>
+        )}
+      </div>
+    );
+  };
+  
+  export default PasswordReset;
 
-export default PasswordReset;
+

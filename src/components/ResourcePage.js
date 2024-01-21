@@ -89,7 +89,6 @@ const ResourcePage = () => {
     </div>;
   }
   const setMessageWithTimer = (successMsg, errorMsg) => {
-    // Clear any existing timeout to avoid multiple timers running
     if (messageTimeout) {
       clearTimeout(messageTimeout);
     }
@@ -97,7 +96,6 @@ const ResourcePage = () => {
     setActionSuccess(successMsg);
     setActionError(errorMsg);
   
-    // Set a new timeout to clear the messages
     const newTimeout = setTimeout(() => {
       setActionSuccess('');
       setActionError('');
@@ -117,24 +115,32 @@ const toggleFavorite = async () => {
     setTimeout(() => setShowLoginPrompt(false), 4000);
     return;
   }
+
+  if (!resourceDetails || !resourceDetails._id) {
+    console.error('Resource ID is undefined.');
+    setMessageWithTimer('', 'Failed to update favorite status. Resource ID is missing.');
+    return;
+  }
+
   const action = isFavorited ? 'unfavorite' : 'favorite';
+  const method = isFavorited ? 'delete' : 'post';
+
   try {
-    const method = isFavorited ? 'delete' : 'post';
     const response = await axios[method](`${backendURL}/api_favorite/resources/${resourceDetails._id}/${action}`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
 
-    if (response.status === 200) {
+    if (response.status === 200 || response.status === 201) {
       setIsFavorited(!isFavorited);
       setMessageWithTimer(`Resource has been ${isFavorited ? 'removed from' : 'added to'} favorites.`, '');
     } else {
-      setMessageWithTimer('', 'Failed to update favorite status.');
+      throw new Error('Unexpected response status: ' + response.status);
     }
   } catch (error) {
-    console.error('Failed to toggle favorite status:', error);
     setMessageWithTimer('', 'Failed to update favorite status.');
   }
 };
+
 
   const handleFavButtonClick = () => {
     if (!isLoggedIn) {
