@@ -523,13 +523,11 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
   value={signupData.password}
   onChange={handleSignupInputChange}
   placeholder="Password"
-  onCopy={(e) => e.preventDefault()} // Prevent copying the password
+  onCopy={(e) => e.preventDefault()} 
 />
-
   <div
     className="icon"
-    onClick={() => setShowSignupPassword(!showSignupPassword)}
-  >
+    onClick={() => setShowSignupPassword(!showSignupPassword)}>
     {showSignupPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
   </div>
   <div className="password-strength-bar" style={{ backgroundColor: passwordStrengthColors[passwordStrength] }}>

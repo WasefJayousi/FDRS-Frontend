@@ -187,17 +187,20 @@ const MyProfile = () => {
     };
 
     try {
-      setLoading(true); ///////////
+      setLoading(true); 
       const response = await axios.put(`${backendURL}/api_user/update_profile`, updateData, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
-
+      if (response.status === 409){
+        setErrorMessage('Email already exists');
+      }
       if (response.status === 200) {
         setProfile(prev => ({
           ...prev,
           username: updateData.newUsername,
           email: updateData.newEmail,
         }));
+        
         setSuccessMessage('Profile updated successfully.');
         setShowSuccessMessage(true);
         setTimeout(() => setShowSuccessMessage(false), 5000);
@@ -223,7 +226,7 @@ const MyProfile = () => {
     setIsAuthorizationMessageVisible(true);
     setTimeout(() => {
       setIsAuthorizationMessageVisible(false);
-    }, 5000); // Hide the message after 5 seconds
+    }, 5000); 
   };
 
   const authorizeResource = async (resourceId) => {
@@ -233,10 +236,9 @@ const MyProfile = () => {
         { accept: true },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
-      console.log('Authorize response:', response); // Debugging log
+      console.log('Authorize response:', response); 
       if (response.status === 200) {
         showAuthorizationMessage('Resource successfully authorized.');
-        // Remove the document from the state to update the UI
         setDocuments(prevDocuments => prevDocuments.filter(doc => doc._id !== resourceId));
       }
     } catch (error) {
@@ -282,7 +284,6 @@ const MyProfile = () => {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (response.status === 200) {
-        // Update the state to reflect the deletion
         setFeedbacks(currentFeedbacks => currentFeedbacks.filter(feedback => feedback._id !== feedbackId));
       }
     } catch (error) {

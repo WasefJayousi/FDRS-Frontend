@@ -18,6 +18,7 @@ const Input = ({ type, id, name, value, onChange, placeholder, maxLength, showCo
   </div>
 );
 
+
 const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -217,7 +218,6 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
       }
     }
   
-    // Prepare the form data
     const formData = new FormData();
     formData.append('title', title);
     formData.append('firstname', authorFirstName);
@@ -240,7 +240,9 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
   
       if (response.status === 201) {
         setSuccessMessage(isAdmin ? 'Document uploaded successfully' : 'Document uploaded successfully waiting for approval');
-       
+      }
+      else if (response.status === 409){
+        setError('Title already exists');
       }
     } catch (uploadError) {
       if (uploadError.response && uploadError.response.data) {

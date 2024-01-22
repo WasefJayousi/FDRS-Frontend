@@ -174,11 +174,11 @@ const toggleFavorite = async () => {
             />
           )}
           <h1>{resourceDetails.Title}</h1>
-          <p className="author">Author: {`${resourceDetails.Author_first_name} ${resourceDetails.Author_last_name}`}</p>
-          <p className="description">{resourceDetails.Description}</p>
+          <p className="author"><strong>Author : </strong>{`${resourceDetails.Author_first_name} ${resourceDetails.Author_last_name}`}</p>
+          <p className="description"><strong>Description : </strong>{resourceDetails.Description}</p>
           <p className="faculty"><strong>Faculty:</strong> {resourceDetails.Faculty.FacultyName}</p>
-          <p className="created-at"><strong>Created At:</strong> {new Date(resourceDetails.created_at).toLocaleDateString()}</p>
-          <p className="user-email">{resourceDetails.User.Email}</p>
+          <p className="created-at"><strong>Uploaded At:</strong> {new Date(resourceDetails.created_at).toLocaleDateString()}</p>
+          <p className="user-email"><strong>Uploader : </strong>{resourceDetails.User.Email}</p>
 
         </div>
         
