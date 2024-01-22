@@ -240,32 +240,30 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
   
       if (response.status === 201) {
         setSuccessMessage(isAdmin ? 'Document uploaded successfully' : 'Document uploaded successfully waiting for approval');
-      }
-      else if (response.status === 409){
-        setError('Title already exists');
+      } else {
+        // Handle other non-201 status responses
+        setError('An error occurred while uploading. Please try again.');
       }
     } catch (uploadError) {
-      if (uploadError.response && uploadError.response.data) {
-        const responseData = uploadError.response.data;
-        if (responseData.message && responseData.message.includes('title already exists')) {
+      if (uploadError.response) {
+        if (uploadError.response.status === 409) {
+          // Handle the case where the title already exists
           setError('A document with this title already exists. Please use a different title.');
-        } else if (responseData.errors) {
-          const titleError = responseData.errors.find(err => err.param === 'title');
-          if (titleError) {
-            setError(titleError.msg);
-          } else {
-            setError('An unexpected error occurred');
-          }
+        } else if (uploadError.response.data) {
+          const responseData = uploadError.response.data;
+          // Handle other error responses
+          setError(responseData.message || 'An error occurred while uploading. Please try again.');
         } else {
+          // Handle general errors
           setError('An error occurred while uploading. Please try again.');
         }
       } else {
-        setError('An error occurred while uploading. Please try again.');
+        // Handle errors where no response is available
+        setError('An error occurred. Please check your network connection and try again.');
       }
     } finally {
       setIsLoading(false);
     }
-    
   };
   
 

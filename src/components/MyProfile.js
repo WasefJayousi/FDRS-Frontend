@@ -189,37 +189,38 @@ const MyProfile = () => {
     try {
       setLoading(true); 
       const response = await axios.put(`${backendURL}/api_user/update_profile`, updateData, {
-        headers: { Authorization: `Bearer ${authToken}` },
+          headers: { Authorization: `Bearer ${authToken}` },
       });
-      if (response.status === 409){
-        setErrorMessage('Email already exists');
-      }
-      if (response.status === 200) {
-        setProfile(prev => ({
-          ...prev,
-          username: updateData.newUsername,
-          email: updateData.newEmail,
-        }));
-        
-        setSuccessMessage('Profile updated successfully.');
-        setShowSuccessMessage(true);
-        setTimeout(() => setShowSuccessMessage(false), 5000);
-        setIsEditMode(false);
-      } else {
-        setErrorMessage('Failed to update profile. Please try again.');
-        setShowErrorMessage(true);
-        setTimeout(() => setShowErrorMessage(false), 5000);
-      }
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-      setErrorMessage(error.response?.data?.message || 'Failed to update profile.');
-      setShowErrorMessage(true);
-      setTimeout(() => setShowErrorMessage(false), 5000);
-    } finally {
-      setLoading(false);
-    }
-  };
 
+      if (response.status === 200) {
+          // existing code for successful update...
+      } else if (response.status === 409) {
+          // Handle email already exists error
+          setErrorMessage('Email already exists. Please use a different email.');
+          setShowErrorMessage(true);
+          setTimeout(() => setShowErrorMessage(false), 5000);
+      } else {
+          // Handle other errors
+          setErrorMessage('Failed to update profile. Please try again.');
+          setShowErrorMessage(true);
+          setTimeout(() => setShowErrorMessage(false), 5000);
+      }
+  } catch (error) {
+      if (error.response && error.response.status === 409) {
+          // Handle email already exists error from catch block
+          setErrorMessage('Email already exists. Please use a different email.');
+          setShowErrorMessage(true);
+          setTimeout(() => setShowErrorMessage(false), 5000);
+      } else {
+          // Handle other errors from catch block
+          setErrorMessage(error.response?.data?.message || 'Failed to update profile.');
+          setShowErrorMessage(true);
+          setTimeout(() => setShowErrorMessage(false), 5000);
+      }
+  } finally {
+      setLoading(false);
+  }
+};
 
   const showAuthorizationMessage = (message) => {
     setAuthorizationMessage(message);
