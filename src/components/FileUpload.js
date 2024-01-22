@@ -18,9 +18,7 @@ const Input = ({ type, id, name, value, onChange, placeholder, maxLength, showCo
   </div>
 );
 
-
 const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
-  // State declarations
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [authorFirstName, setAuthorFirstName] = useState('');

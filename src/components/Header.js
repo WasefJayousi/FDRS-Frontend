@@ -15,12 +15,14 @@ import './Sidebar.css';
 
 
 
-const Input = ({ type, id, name, value, onChange, placeholder }) => (
+const Input = ({ type, id, name, value, onChange, placeholder, onCopy }) => (
   <div className="form-group">
     <label htmlFor={id}>{placeholder}</label>
-    <input type={type} id={id} name={name} className="inputBarH" placeholder={placeholder} value={value} onChange={onChange} required />
+    <input type={type} id={id} name={name} className="inputBarH" placeholder={placeholder} value={value} onChange={onChange} onCopy={onCopy} required 
+    />
   </div>
 );
+
 
 
 const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => {
@@ -119,8 +121,15 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
     setLoginErrorMessage('');
     setSignupErrorMessage('');
     setSuccessMessage('');
+    // Also clear the password strength and criteria
+    setPasswordStrength(0);
+    setPasswordCriteria({
+      length: false,
+      lowercase: false,
+      specialChar: false
+    });
   };
-
+  
   const handleSignupModalOpen = () => {
     setIsLoginModalOpen(false);
     setIsSignupOpen(true);
@@ -136,7 +145,15 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
   const closeSignupModal = () => {
     setIsSignupOpen(false);
     clearFormFields();
+    // Reset password strength and criteria
+    setPasswordStrength(0);
+    setPasswordCriteria({
+      length: false,
+      lowercase: false,
+      specialChar: false
+    });
   };
+  
   const closeLoginModal = () => {
     setIsLoginModalOpen(false);
     setUsernameOrEmail(''); // Clear username or email
@@ -166,16 +183,36 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
   
   const validateSignup = () => {
     let errors = {};
-    // Add your validation logic for signup fields
-    // Similar to validateLogin, but for signupData fields
+    
+    if (!passwordCriteria.length) {
+      errors.password = "Password must be at least 8 characters long.";
+    }
+    if (!passwordCriteria.lowercase) {
+      errors.password = "Password must include at least one lowercase character.";
+    }
+    if (!passwordCriteria.specialChar) {
+      errors.password = "Password must include at least one special character.";
+    }
+  
     setSignupValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
+  
   
 
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+  
+    // Check if all password criteria are met
+    const allCriteriaMet = passwordCriteria.length && passwordCriteria.lowercase && passwordCriteria.specialChar;
+    if (!allCriteriaMet) {
+      setSignupErrorMessage('Please ensure all password criteria are met.');
+      setLoading(false);
+      return;
+    }
+  
+    // Existing validation and submission logic...
     if (!validateSignup()) {
       setLoading(false);
       return;
@@ -458,7 +495,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
         <FileUpload facultyId={facultyId} setIsModalOpen={setIsFileUploadOpen} />
       )}
 
-<Modal isOpen={isSignupOpen} onClose={() => setIsSignupOpen(false)}>
+<Modal isOpen={isSignupOpen} onClose={closeSignupModal}>
         <label htmlFor="username"><h1>SignUp</h1></label>
 
         {successMessage && (
@@ -479,14 +516,16 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
     {signupSuccessMessage && <div className="success-message">{signupSuccessMessage}</div>}
 
     <div className="form-group password-group">
-  <Input
-    type={showSignupPassword ? "text" : "password"}
-    id="password"
-    name="password"
-    value={signupData.password}
-    onChange={handleSignupInputChange}
-    placeholder="Password"
-  />
+    <Input
+  type={showSignupPassword ? "text" : "password"}
+  id="password"
+  name="password"
+  value={signupData.password}
+  onChange={handleSignupInputChange}
+  placeholder="Password"
+  onCopy={(e) => e.preventDefault()} // Prevent copying the password
+/>
+
   <div
     className="icon"
     onClick={() => setShowSignupPassword(!showSignupPassword)}
@@ -503,7 +542,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
   <li className={passwordCriteria.specialChar ? 'met' : ''}>1 special character</li>
 </ul>
   
-    <Input type="password" id="confirm-password" name="confirm-password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} placeholder="Confirm Password" />
+    <Input type="password" id="confirm-password" name="confirm-password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} placeholder="Confirm Password"   onCopy={(e) => e.preventDefault()} />
     <button type="submit" className="authButton">Submit</button>
 </form>
 
