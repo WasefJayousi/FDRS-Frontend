@@ -564,6 +564,9 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
           </button>
 
           {isResettingPassword && <div className="loading-message">Please wait...</div>}
+          <button type="button" className="authButton" onClick={() => {closeForgotPasswordModal();handleLoginModalOpen();}}>
+      Back to Login
+    </button>
 
         </form>
       </Modal>
