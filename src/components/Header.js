@@ -524,7 +524,7 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
   onCopy={(e) => e.preventDefault()} 
 />
   <div
-    className="icon"
+    className="icons"
     onClick={() => setShowSignupPassword(!showSignupPassword)}>
     {showSignupPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
   </div>
