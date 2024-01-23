@@ -23,7 +23,7 @@ function App() {
     if (searchResults.length > 0) {
       const timer = setTimeout(() => {
         setSearchResults([]);
-      }, 4000); 
+      }, 30000); 
 
       return () => clearTimeout(timer); 
     }

@@ -67,10 +67,10 @@ const FeedbackForm = ({ authToken, onSearch, showFeedbackButton }) => {
   };
 
   const handleSearch = async () => {
-    onSearch(debouncedSearchTerm,facultyId);
+    const encodedSearchTerm = encodeURIComponent(debouncedSearchTerm);
+    onSearch(encodedSearchTerm, facultyId);
   };
   
-
   const submitFeedback = async () => {
     const { user } = authContext;
     if (!user) {

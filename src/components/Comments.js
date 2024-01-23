@@ -140,18 +140,18 @@ const Comments = ({ resourceId }) => {
   
   return (
     <div className="comments-container">
-<h2 className="comments-title">Comments</h2>
-     <button className="authButton sortButton" onClick={handleSort}>
-        Sort by {sortOrder === 'newest' ? 'Oldest' : 'Newest'}
-      </button>
+    <h2 className="comments-title">Comments</h2>
+    <button className="authButton sortButton" onClick={handleSort}>
+      Sort by {sortOrder === 'newest' ? 'Oldest' : 'Newest'}
+    </button>
     <div className="comments-list">
       {sortedComments.map(comment => (
         <div key={comment._id} className="comment">
           <div className="comment-header">
-            <span className="comment-author">{comment.User.Username || 'Anonymous'}</span>
+            <span className="comment-author"><strong>{comment.User.Username || 'Anonymous'}</strong></span>
             <span className="comment-date">{new Date(comment.Created_date).toLocaleString()}</span>
           </div>
-          <div className="comment-title">
+          <div className="comment-body">
             {editing.id === comment._id ? (
               <textarea
                 className="inputBarC"
@@ -159,28 +159,25 @@ const Comments = ({ resourceId }) => {
                 onChange={(e) => setEditing({ ...editing, text: e.target.value })}
               />
             ) : (
-              <h2>{comment.Comment}</h2> 
+              <p className="comment-text">{comment.Comment}</p>
             )}
           </div>
-          {canEditComment(comment) && (
-      <div className="comment-actions">
-        {editing.id === comment._id ? (
-          <button className="authButton" onClick={() => saveUpdatedComment(comment._id)}>Save</button>
-        ) : (
-          <button className="authButton" onClick={() => setEditing({ id: comment._id, text: comment.Comment })}>
-            Edit
-          </button>
-        )}
-      </div>
-    )}
-    {canDeleteComment(comment) && (
-      <button className="authButton" onClick={() => deleteComment(comment._id)}>Delete</button>
-    )}
-  
+          <div className="comment-actions">
+            {canEditOrDeleteComment(comment) && (
+              <>
+                {editing.id === comment._id ? (
+                  <button className="authButton" onClick={() => saveUpdatedComment(comment._id)}>Save</button>
+                ) : (
+                  <button className="authButton" onClick={() => setEditing({ id: comment._id, text: comment.Comment })}>Edit</button>
+                )}
+                <button className="authButton" onClick={() => deleteComment(comment._id)}>Delete</button>
+              </>
+            )}
+          </div>
         </div>
       ))}
     </div>
-    {isLoggedIn && (
+    {isLoggedIn ? (
       <div className="add-comment">
         <textarea
           value={newComment}
@@ -188,9 +185,10 @@ const Comments = ({ resourceId }) => {
           onChange={handleTextChange}
           placeholder="Write your comment..."
         />
-        <div>
         <button className="authButton" onClick={addComment}>Post Comment</button>
-      </div></div>
+      </div>
+    ) : (
+      <p className="login-prompt">Please log in to add comments.</p>
     )}
   </div>
 );

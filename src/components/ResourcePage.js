@@ -159,7 +159,10 @@ const toggleFavorite = async () => {
       console.error('Could not copy text: ', err);
     });
   };
- 
+  const bytesToMB = (bytes) => {
+    return (bytes / 1048576).toFixed(2); // Converts to MB and rounds to 2 decimal places
+  };
+  
   return (
     <CSSTransition in={inProp} timeout={300} classNames="fade" appear>
    <div className="resource-container">
@@ -176,6 +179,7 @@ const toggleFavorite = async () => {
           <h1>{resourceDetails.Title}</h1>
           <p className="author"><strong>Author : </strong>{`${resourceDetails.Author_first_name} ${resourceDetails.Author_last_name}`}</p>
           <p className="description"><strong>Description : </strong>{resourceDetails.Description}</p>
+          <p className="description"><strong>File Size: </strong>{bytesToMB(resourceDetails.file_size)} MB</p>
           <p className="faculty"><strong>Faculty:</strong> {resourceDetails.Faculty.FacultyName}</p>
           <p className="created-at"><strong>Uploaded At:</strong> {new Date(resourceDetails.created_at).toLocaleDateString()}</p>
           <p className="user-email"><strong>Uploader : </strong>{resourceDetails.User.Email}</p>

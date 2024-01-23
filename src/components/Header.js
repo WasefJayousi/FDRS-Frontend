@@ -432,13 +432,11 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
 
   const handleUploadButtonClick = () => {
     if (!isLoggedIn) {
-      setShowLoginPrompt(true);
-      setTimeout(() => setShowLoginPrompt(false), 4000);
+      handleLoginModalOpen(); // Open the login modal if the user is not logged in
       return;
     }
-    setIsModalOpen(true);
+    setIsModalOpen(true); // Existing code to open the upload modal
   };
-
 
   return (
     <header className={`headerContainer ${isLoading ? 'loading' : ''}`}>
@@ -614,6 +612,10 @@ const Header = ({ setIsModalOpen, isLoading, onSearch, showFeedbackButton }) => 
 
           <button type="submit" className="authButton" onClick={handleLoginSubmit}>Login</button>
           <button type="button" className="authButton" onClick={handleForgotPassword}>Forgot Password</button>
+          <div>
+        <p>Don't have an account?</p>
+        <button onClick={handleSignupModalOpen} className="authButton">Sign Up</button>
+      </div>
         </form>
       </Modal>
 
