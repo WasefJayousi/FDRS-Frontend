@@ -177,7 +177,10 @@ const Comments = ({ resourceId }) => {
         </div>
       ))}
     </div>
-    {isLoggedIn ? (
+    {!isLoggedIn &&(
+      <p>Please log in to add comments.</p>
+    )}
+    {isLoggedIn && (
       <div className="add-comment">
         <textarea
           value={newComment}
@@ -187,8 +190,6 @@ const Comments = ({ resourceId }) => {
         />
         <button className="authButton" onClick={addComment}>Post Comment</button>
       </div>
-    ) : (
-      <p className="login-prompt">Please log in to add comments.</p>
     )}
   </div>
 );
