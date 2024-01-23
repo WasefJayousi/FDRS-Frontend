@@ -193,26 +193,21 @@ const MyProfile = () => {
       });
 
       if (response.status === 200) {
-          // existing code for successful update...
       } else if (response.status === 409) {
-          // Handle email already exists error
           setErrorMessage('Email already exists. Please use a different email.');
           setShowErrorMessage(true);
           setTimeout(() => setShowErrorMessage(false), 5000);
       } else {
-          // Handle other errors
           setErrorMessage('Failed to update profile. Please try again.');
           setShowErrorMessage(true);
           setTimeout(() => setShowErrorMessage(false), 5000);
       }
   } catch (error) {
       if (error.response && error.response.status === 409) {
-          // Handle email already exists error from catch block
-          setErrorMessage('Email already exists. Please use a different email.');
+          setErrorMessage('Email or Username already exists. Please use a different email.');
           setShowErrorMessage(true);
           setTimeout(() => setShowErrorMessage(false), 5000);
       } else {
-          // Handle other errors from catch block
           setErrorMessage(error.response?.data?.message || 'Failed to update profile.');
           setShowErrorMessage(true);
           setTimeout(() => setShowErrorMessage(false), 5000);
