@@ -60,6 +60,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "compress-create-react-app": "^1.4.4",
     "webpack-cli": "^5.1.4",
     "worker-loader": "^3.0.8"
   },
