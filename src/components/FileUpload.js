@@ -289,7 +289,7 @@ const FileUpload = ({ isModalOpen, setIsModalOpen }) => {
           <Input placeholder="File To upload(PDF) 50MB" type="file" id="documentFile" name="file" accept="application/pdf"  onChange={handleFileChange}/>
           {validationErrors.file && <div className="error-message">{validationErrors.file}</div>}
 
-          <Input placeholder="Related Image" type="file" id="imageFile" name="img" accept="image/jpeg, image/jpg, image/png" onChange={handleImgChange} />
+          <Input placeholder="Related Image (Optional)" type="file" id="imageFile" name="img" accept="image/jpeg, image/jpg, image/png" onChange={handleImgChange} />
           {validationErrors.img && <div className="error-message">{validationErrors.img}</div>}
           <div className="form-group checkbox-container">
   <label htmlFor="hasRights" className="checkbox-label">
